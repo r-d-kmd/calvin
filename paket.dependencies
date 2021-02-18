@@ -4,16 +4,19 @@ framework: auto-detect
 storage: none
 
 nuget FSharp.Core
-nuget Newtonsoft.Json
-nuget Thoth.Json.Net
-
-group core
-    source https://api.nuget.org/v3/index.json
-    framework: auto-detect
-    storage: none
-
-    nuget Accord.MachineLearning
-    nuget FParsec
+nuget GraphQL
+nuget GraphQL.Server.Core
+nuget GraphQL.Server.Transports.AspNetCore
+nuget GraphQL.Server.Transports.AspNetCore.SystemTextJson
+nuget Microsoft.AspNetCore
+nuget Microsoft.Extensions.Hosting
+nuget GraphQL.Server.Ui.GraphiQL
+nuget GraphQL.Server.Ui.Playground
+nuget GraphQL.Server.Ui.Altair
+nuget GraphQL.Server.Ui.Voyager
+nuget serilog
+nuget Serilog.Extensions.Hosting
+nuget Serilog.Sinks.Console
 
 group test
     source https://api.nuget.org/v3/index.json
@@ -26,52 +29,6 @@ group test
     nuget Microsoft.NET.Test.SDK
     nuget microsoft.testplatform.testhost
     nuget xunit.runner.VisualStudio  
-
-group visualizer
-    source https://api.nuget.org/v3/index.json
-    framework: auto-detect
-    storage: none
-
-    # FSharp.Data
-    nuget FSharp.Data 
-
-    # MathNet.Numerics
-    nuget MathNet.Numerics 
-    nuget MathNet.Numerics.FSharp 
-
-    # XPlot
-    nuget XPlot.Plotly 
-    nuget XPlot.GoogleCharts 
-    nuget XPlot.GoogleCharts.Deedle 
-    nuget Newtonsoft.Json 
-    
-    #should be same version as core but as long as this is a script we need to store them
-    nuget FParsec
-    nuget Deedle
-    nuget Accord.MachineLearning
-    nuget FSharp.Formatting
-
-group visualizer.web
-    source https://api.nuget.org/v3/index.json
-    framework: auto-detect
-    storage: none
-
-    nuget Fable.SimpleJson 3.11.0
-    nuget Fable.Remoting.Giraffe
-    nuget Saturn
-    nuget Expecto
-
-    nuget Fable.Core
-    nuget Fable.Elmish
-    nuget Fable.Elmish.React
-    nuget Fable.Elmish.Debugger
-    nuget Fable.Elmish.HMR
-    nuget Fable.FontAwesome.Free
-    nuget Fable.Mocha
-    nuget Fable.React
-    nuget Fable.Remoting.Client
-    nuget Fulma
-    nuget Fable.Recharts
 
 group Build
     source https://api.nuget.org/v3/index.json
