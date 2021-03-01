@@ -1,43 +1,22 @@
-version 5.249.2
 source https://api.nuget.org/v3/index.json
-framework: auto-detect
-storage: none
 
+nuget FSharp.Data.Graphql.Server
+nuget FSharp.Data.Graphql.Server.Middleware
+nuget Microsoft.Extensions.Http 5
+nuget System.Net.Http 4.3.4
 nuget FSharp.Core
-nuget GraphQL
-nuget GraphQL.Server.Core
-nuget GraphQL.Server.Transports.AspNetCore
-nuget GraphQL.Server.Transports.AspNetCore.SystemTextJson
-nuget Microsoft.AspNetCore
-nuget Microsoft.Extensions.Hosting
-nuget GraphQL.Server.Ui.GraphiQL
-nuget GraphQL.Server.Ui.Playground
-nuget GraphQL.Server.Ui.Altair
-nuget GraphQL.Server.Ui.Voyager
-nuget serilog
-nuget Serilog.Extensions.Hosting
-nuget Serilog.Sinks.Console
+nuget Newtonsoft.Json
+nuget Suave
+nuget Giraffe
+nuget FSharp.Data.TypeProviders
 
-group test
-    source https://api.nuget.org/v3/index.json
-    framework: auto-detect
-    storage: none
-    
-    nuget FsUnit
-    nuget FsUnit.xUnit
-    nuget xUnit
-    nuget Microsoft.NET.Test.SDK
-    nuget microsoft.testplatform.testhost
-    nuget xunit.runner.VisualStudio  
-
-group Build
-    source https://api.nuget.org/v3/index.json
-    framework: netstandard2.0
-    storage: none
-
-    nuget FSharp.Core
-    nuget Fake.Core.ReleaseNotes
-    nuget Fake.Core.Target
-    nuget Fake.DotNet.Cli
-    nuget Fake.IO.FileSystem
-    nuget Farmer
+group Tests
+  source https://api.nuget.org/v3/index.json
+  frameworks: auto-detect
+  
+  nuget Microsoft.NET.Test.Sdk
+  nuget xunit 
+  nuget xunit.runner.utility
+  nuget xunit.runner.console
+  nuget xunit.runner.visualstudio
+  nuget BenchmarkDotNet

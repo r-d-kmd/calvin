@@ -1,14 +1,4 @@
 FSharp.Core
-GraphQL
-GraphQL.Server.Core
-GraphQL.Server.Transports.AspNetCore
-GraphQL.Server.Transports.AspNetCore.SystemTextJson
-Microsoft.AspNetCore
-Microsoft.Extensions.Hosting
-GraphQL.Server.Ui.GraphiQL
-GraphQL.Server.Ui.Playground
-GraphQL.Server.Ui.Altair
-GraphQL.Server.Ui.Voyager
-serilog
-Serilog.Extensions.Hosting
-Serilog.Sinks.Console
+Giraffe
+FSharp.Data.GraphQL.Server
+FSharp.Data.Graphql.Server.Middleware
