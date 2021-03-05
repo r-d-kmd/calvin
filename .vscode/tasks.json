@@ -7,7 +7,7 @@
             "label": "clean",
             "command": "dotnet",
             "type": "shell",
-            "options": {"cwd": "/Users/Rune/Projects/calvin/src"},
+            "options": {"cwd": "${workspaceFolder:calvin}/src"},
             "args": [
                 "clean",
                 "/consoleloggerparameters:NoSummary"
@@ -23,7 +23,7 @@
             "label": "build",
             "command": "dotnet",
             "type": "shell",
-            "options": {"cwd": "/Users/Rune/Projects/calvin/src"},
+            "options": {"cwd": "${workspaceFolder:calvin}/src"},
             "args": [
                 "build",
                 // Ask dotnet build to generate full paths for file names.
