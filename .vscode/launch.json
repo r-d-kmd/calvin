@@ -10,9 +10,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/bin/Debug/net5.0/calvin.dll",
+            "program": "${workspaceFolder:calvin}/src/bin/Debug/netcoreapp5.0/calvin.service.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder:calvin}/src",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -22,9 +22,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/bin/Debug/net5.0/calvin.dll",
+            "program": "${workspaceFolder:calvin}/src/bin/Debug/netcoreapp5.0/calvin.service.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder:calvin}/src",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
@@ -34,7 +34,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder:calvin}/Views"
             }
         }
     ]
