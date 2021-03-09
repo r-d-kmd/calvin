@@ -28,6 +28,9 @@ module HttpHandlers =
     let setContentTypeAsJson : HttpHandler =
         setHttpHeader "Content-Type" "application/json"
 
+    let setContentTypeAsHtml : HttpHandler =
+        setHttpHeader "Content-Type" "application/html"
+
     let private graphQL (next : HttpFunc) (ctx : HttpContext) = task {
         let serialize d = JsonConvert.SerializeObject(d, jsonSettings)
 
@@ -106,7 +109,17 @@ module HttpHandlers =
             return! okWithStr (json result) next ctx
     }
 
-    let webApp : HttpHandler = 
+    let webApp : HttpHandler =
         setCorsHeaders
-        >=> graphQL 
-        >=> setContentTypeAsJson
+        >=> choose [
+            GET >=> 
+                choose [
+                    route "/graphql"
+                    >=> htmlFile "static/playground.html"
+                    >=> setContentTypeAsHtml ]
+            POST >=> 
+                choose [
+                    route "/graphql"
+                    >=> graphQL
+                    >=> setContentTypeAsJson ]
+        ]
