@@ -1,4 +1,6 @@
 source https://api.nuget.org/v3/index.json
+framework: auto-detect
+storage: none
 
 nuget FSharp.Data.Graphql.Server
 nuget FSharp.Data.Graphql.Server.Middleware
@@ -12,8 +14,9 @@ nuget FSharp.Data.TypeProviders
 
 group Tests
   source https://api.nuget.org/v3/index.json
-  frameworks: auto-detect
-  
+  framework: auto-detect
+  storage: none
+
   nuget Microsoft.NET.Test.Sdk
   nuget xunit 
   nuget xunit.runner.utility
