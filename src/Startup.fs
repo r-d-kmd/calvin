@@ -26,7 +26,7 @@ type Startup private () =
         app
             .UseGiraffeErrorHandler(errorHandler)
             .UseWebSockets()
-            .UseMiddleware<GraphQLWebSocketMiddleware<Root>>(Schema.executor, fun () -> { RequestId = Guid.NewGuid().ToString() })
+            //.UseMiddleware<GraphQLWebSocketMiddleware<Root>>(Schema.executor, fun () -> { RequestId = Guid.NewGuid().ToString() })
             .UseGiraffe HttpHandlers.webApp
 
     member val Configuration : IConfiguration = null with get, set
