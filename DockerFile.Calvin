@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0
+
+COPY . /project
+
+WORKDIR /project/src
+# TODO: REMOVE THIS!!!! ALL OF IT!!!
+RUN echo "hej sebastian"
+RUN dotnet build /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary --output /calvin
+COPY ./src/static /calvin
+
+EXPOSE 8085/tcp
+
+#ENTRYPOINT ["sh"]
+CMD ["/calvin/calvin.service"]
+
+
+# https://hub.docker.com/_/microsoft-dotnet/
+# docker images
+# docker create 7a0e63e1b69f
+# docker run -p 8084 -it calvin:test /bin/sh
+# docker inspect affectionate_khorana
+# http://172.17.0.2:8084/
+# http://host.docker.internal:8084
+# docker start -it affectionate_khorana bash
+# netcat -l 8085
+# apt install netcat -y
+# apt update
