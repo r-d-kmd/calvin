@@ -6,176 +6,72 @@ open FSharp.Data.GraphQL.Server.Middleware
 
 #nowarn "40"
 
-type Episode =
-    | NewHope = 1
-    | Empire = 2
-    | Jedi = 3
-
-type Human =
-    { Id : string
-      Name : string option
-      Friends : string list
-      AppearsIn : Episode list
-      HomePlanet : string option }
-
-type Droid =
-    { Id : string
-      Name : string option
-      Friends : string list
-      AppearsIn : Episode list
-      PrimaryFunction : string option }
-
-type Planet =
-    { Id : string
-      Name : string option
-      mutable IsMoon : bool option }
-    member x.SetMoon b =
-        x.IsMoon <- b
-        x
+type Sprint =
+    { TimeStamp : string option
+      SprintName : string option
+      WorkItemId : int
+      ChangedDate : string option
+      WorkItemType : string option
+      CreatedDate : string option
+      ClosedDate : string option
+      LeadTimeDays : string option
+      CycleTimeDays : string option
+      StoryPoints : int option
+      RevisedDate : string option
+      Priority : int option
+      Title : string option
+      SprintNumber : int option
+      State : string option}
 
 type Root =
     { RequestId: string }
 
-type Character =
-    | Human of Human
-    | Droid of Droid
-
 module Schema =
-    let humans =
-        [ { Id = "1000"
-            Name = Some "Luke Skywalker"
-            Friends = [ "1002"; "1003"; "2000"; "2001" ]
-            AppearsIn = [ Episode.NewHope; Episode.Empire; Episode.Jedi ]
-            HomePlanet = Some "Tatooine" }
-          { Id = "1001"
-            Name = Some "Darth Vader"
-            Friends = [ "1004" ]
-            AppearsIn = [ Episode.NewHope; Episode.Empire; Episode.Jedi ]
-            HomePlanet = Some "Tatooine" }
-          { Id = "1002"
-            Name = Some "Han Solo"
-            Friends = [ "1000"; "1003"; "2001" ]
-            AppearsIn = [ Episode.NewHope; Episode.Empire; Episode.Jedi ]
-            HomePlanet = None }
-          { Id = "1003"
-            Name = Some "Leia Organa"
-            Friends = [ "1000"; "1002"; "2000"; "2001" ]
-            AppearsIn = [ Episode.NewHope; Episode.Empire; Episode.Jedi ]
-            HomePlanet = Some "Alderaan" }
-          { Id = "1004"
-            Name = Some "Wilhuff Tarkin"
-            Friends = [ "1001" ]
-            AppearsIn = [ Episode.NewHope ]
-            HomePlanet = None } ]
+    let sprints =
+        [ { TimeStamp = Some "03/11/2021 10:34:15"
+            SprintName = Some null
+            WorkItemId = 81347
+            ChangedDate = Some "04/10/2019 11:14:04"
+            WorkItemType = Some "User Story"
+            CreatedDate = Some "03/12/2019 11:50:47"
+            ClosedDate = Some "04/10/2019 11:14:04"
+            LeadTimeDays = Some "28.9745023"
+            CycleTimeDays = Some "7.1225925"
+            StoryPoints = Some 5
+            RevisedDate = Some "01/01/9999 00:00:00"
+            Priority = Some 2
+            Title = Some "user can select transformation"
+            SprintNumber = Some 0
+            State = Some "Done"}]
+        
 
-    let droids =
-        [ { Id = "2000"
-            Name = Some "C-3PO"
-            Friends = [ "1000"; "1002"; "1003"; "2001" ]
-            AppearsIn = [ Episode.NewHope; Episode.Empire; Episode.Jedi ]
-            PrimaryFunction = Some "Protocol" }
-          { Id = "2001"
-            Name = Some "R2-D2"
-            Friends = [ "1000"; "1002"; "1003" ]
-            AppearsIn = [ Episode.NewHope; Episode.Empire; Episode.Jedi ]
-            PrimaryFunction = Some "Astromech" } ]
+    let getSprint id =
+        sprints |> List.tryFind (fun s -> s.WorkItemId = id)
 
-    let planets =
-        [ { Id = "1"
-            Name = Some "Tatooine"
-            IsMoon = Some false}
-          { Id = "2"
-            Name = Some "Endor"
-            IsMoon = Some true}
-          { Id = "3"
-            Name = Some "Death Star"
-            IsMoon = Some false}]
-
-    let getHuman id =
-        humans |> List.tryFind (fun h -> h.Id = id)
-
-    let getDroid id =
-        droids |> List.tryFind (fun d -> d.Id = id)
-
-    let getPlanet id =
-        planets |> List.tryFind (fun p -> p.Id = id)
-
-    let characters =
-        (humans |> List.map Human) @ (droids |> List.map Droid)
-
-    let matchesId id = function
-        | Human h -> h.Id = id
-        | Droid d -> d.Id = id
-
-    let getCharacter id =
-        characters |> List.tryFind (matchesId id)
-
-    let EpisodeType =
-        Define.Enum(
-            name = "Episode",
-            description = "One of the films in the Star Wars Trilogy.",
-            options = [
-                Define.EnumValue("NewHope", Episode.NewHope, "Released in 1977.")
-                Define.EnumValue("Empire", Episode.Empire, "Released in 1980.")
-                Define.EnumValue("Jedi", Episode.Jedi, "Released in 1983.") ])
-
-    let rec CharacterType =
-        Define.Union(
-            name = "Character",
-            description = "A character in the Star Wars Trilogy.",
-            options = [ HumanType; DroidType ],
-            resolveValue = (fun o ->
-                match o with
-                | Human h -> box h
-                | Droid d -> upcast d),
-            resolveType = (fun o ->
-                match o with
-                | Human _ -> upcast HumanType
-                | Droid _ -> upcast DroidType))
-
-    and HumanType : ObjectDef<Human> =
-        Define.Object<Human>(
-            name = "Human",
-            description = "A humanoid creature in the Star Wars universe.",
-            isTypeOf = (fun o -> o :? Human),
+    let SprintType =
+        Define.Object<Sprint>(
+            name = "Sprint",
+            description = "A sprint",
             fieldsFn = fun () ->
-            [
-                Define.Field("id", String, "The id of the human.", fun _ (h : Human) -> h.Id)
-                Define.Field("name", Nullable String, "The name of the human.", fun _ (h : Human) -> h.Name)
-                Define.Field("friends", ListOf (Nullable CharacterType), "The friends of the human, or an empty list if they have none.",
-                    fun _ (h : Human) -> h.Friends |> List.map getCharacter |> List.toSeq).WithQueryWeight(0.5)
-                Define.Field("appearsIn", ListOf EpisodeType, "Which movies they appear in.", fun _ (h : Human) -> h.AppearsIn)
-                Define.Field("homePlanet", Nullable String, "The home planet of the human, or null if unknown.", fun _ h -> h.HomePlanet)
-            ])
+                [
+                    Define.Field("TimeStamp", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.TimeStamp)
+                    Define.Field("SprintName", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.SprintName)
+                    Define.Field("WorkItemId", Int, "The Time Stamp", fun _ (s : Sprint) -> s.WorkItemId)
+                    Define.Field("ChangedDate", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.ChangedDate)
+                    Define.Field("WorkItemType", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.WorkItemType)
+                    Define.Field("CreatedDate", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.CreatedDate)
+                    Define.Field("ClosedDate", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.ClosedDate)
+                    Define.Field("LeadTimeDays", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.LeadTimeDays)
+                    Define.Field("CycleTimeDays", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.CycleTimeDays)
+                    Define.Field("StoryPoints", Nullable Int, "The Time Stamp", fun _ (s : Sprint) -> s.StoryPoints)
+                    Define.Field("RevisedDate", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.RevisedDate)
+                    Define.Field("Priority", Nullable Int, "The Time Stamp", fun _ (s : Sprint) -> s.Priority)
+                    Define.Field("Title", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.Title)
+                    Define.Field("SprintNumber", Nullable Int, "The Time Stamp", fun _ (s : Sprint) -> s.SprintNumber)
+                    Define.Field("State", Nullable String, "The Time Stamp", fun _ (s : Sprint) -> s.State)
+                ])
 
-    and DroidType =
-        Define.Object<Droid>(
-            name = "Droid",
-            description = "A mechanical creature in the Star Wars universe.",
-            isTypeOf = (fun o -> o :? Droid),
-            fieldsFn = fun () ->
-            [
-                Define.Field("id", String, "The id of the droid.", fun _ (d : Droid) -> d.Id)
-                Define.Field("name", Nullable String, "The name of the Droid.", fun _ (d : Droid) -> d.Name)
-                Define.Field("friends", ListOf (Nullable CharacterType), "The friends of the Droid, or an empty list if they have none.",
-                    fun _ (d : Droid) -> d.Friends |> List.map getCharacter |> List.toSeq).WithQueryWeight(0.5)
-                Define.Field("appearsIn", ListOf EpisodeType, "Which movies they appear in.", fun _ d -> d.AppearsIn)
-                Define.Field("primaryFunction", Nullable String, "The primary function of the droid.", fun _ d -> d.PrimaryFunction)
-            ])
-
-    and PlanetType =
-        Define.Object<Planet>(
-            name = "Planet",
-            description = "A planet in the Star Wars universe.",
-            isTypeOf = (fun o -> o :? Planet),
-            fieldsFn = fun () ->
-            [
-                Define.Field("id", String, "The id of the planet", fun _ p -> p.Id)
-                Define.Field("name", Nullable String, "The name of the planet.", fun _ p -> p.Name)
-                Define.Field("isMoon", Nullable Boolean, "Is that a moon?", fun _ p -> p.IsMoon)
-            ])
-
-    and RootType =
+    let RootType =
         Define.Object<Root>(
             name = "Root",
             description = "The Root type to be passed to all our resolvers.",
@@ -189,48 +85,14 @@ module Schema =
         Define.Object<Root>(
             name = "Query",
             fields = [
-                Define.Field("hero", Nullable HumanType, "Gets human hero", [ Define.Input("id", String) ], fun ctx _ -> getHuman (ctx.Arg("id")))
-                Define.Field("droid", Nullable DroidType, "Gets droid", [ Define.Input("id", String) ], fun ctx _ -> getDroid (ctx.Arg("id")))
-                Define.Field("planet", Nullable PlanetType, "Gets planet", [ Define.Input("id", String) ], fun ctx _ -> getPlanet (ctx.Arg("id")))
-                Define.Field("characters", ListOf CharacterType, "Gets characters", fun _ _ -> characters) ])
-
-    let Subscription =
-        Define.SubscriptionObject<Root>(
-            name = "Subscription",
-            fields = [
-                Define.SubscriptionField(
-                    "watchMoon",
-                    RootType,
-                    PlanetType,
-                    "Watches to see if a planet is a moon.",
-                    [ Define.Input("id", String) ],
-                    (fun ctx _ p -> if ctx.Arg("id") = p.Id then Some p else None)) ])
+                Define.Field("sprint", Nullable SprintType, "Gets Sprint", [ Define.Input("id", Int) ], fun ctx _ -> getSprint (ctx.Arg("id") ) ) ] )
 
     let schemaConfig = SchemaConfig.Default
 
-    let Mutation =
-        Define.Object<Root>(
-            name = "Mutation",
-            fields = [
-                Define.Field(
-                    "setMoon",
-                    Nullable PlanetType,
-                    "Defines if a planet is actually a moon or not.",
-                    [ Define.Input("id", String); Define.Input("isMoon", Boolean) ],
-                    fun ctx _ ->
-                        getPlanet (ctx.Arg("id"))
-                        |> Option.map (fun x ->
-                            x.SetMoon(Some(ctx.Arg("isMoon"))) |> ignore
-                            schemaConfig.SubscriptionProvider.Publish<Planet> "watchMoon" x
-                            schemaConfig.LiveFieldSubscriptionProvider.Publish<Planet> "Planet" "isMoon" x
-                            x))])
-
-    let schema : ISchema<Root> = upcast Schema(Query, Mutation, Subscription, schemaConfig)
+    let schema : ISchema<Root> = upcast Schema(Query)
 
     let middlewares = 
         [ Define.QueryWeightMiddleware(2.0, true)
-          Define.ObjectListFilterMiddleware<Human, Character option>(true)
-          Define.ObjectListFilterMiddleware<Droid, Character option>(true)
           Define.LiveQueryMiddleware() ]
 
     let executor = Executor(schema, middlewares)

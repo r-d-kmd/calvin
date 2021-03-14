@@ -30,7 +30,7 @@ module HttpHandlers =
 
     let setContentTypeAsHtml : HttpHandler =
         setHttpHeader "Content-Type" "application/html"
-
+    
     let private graphQL (next : HttpFunc) (ctx : HttpContext) = task {
         let serialize d = JsonConvert.SerializeObject(d, jsonSettings)
 
