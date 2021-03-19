@@ -6,24 +6,8 @@ open FSharp.Data.GraphQL.Server.Middleware
 
 #nowarn "40"
 
-type Sprint = { 
-    Number : int
-    Projects : Project list   
-} 
 
-and Project = {
-    Sprints : SprintInstance list
-    Name : string
-}
-
-and SprintInstance = {
-    SprintName : string option
-    CreatedDate : string option
-    ClosedDate : string option
-    WorkItem : WorkItem list
-}
-
-and WorkItem = {
+type WorkItem = {
       LeadTimeDays : string option
       CycleTimeDays : string option
       StoryPoints : int option
@@ -36,27 +20,49 @@ and WorkItem = {
       WorkItemId : int
 }
 
+type SprintInstance = {
+    SprintName : string option
+    CreatedDate : string option
+    ClosedDate : string option
+    WorkItems : WorkItem list
+}
+
+type Project = {
+    Name : string
+    Sprints : SprintInstance list
+}
+
+type Sprint = { 
+    Number : int
+    Projects : Project list   
+} 
+
+
+
 type Root =
     { RequestId: string }
 
-module Schema =
+module Schema = 
     
-    let sprints = 
-    [{  Number = Some 0
-        Projects = Some Option.Nullable }]
+    let sprints = [{  
+        Number = 0
+        Projects = []
+    }]
 
-    let sprintInstances = 
-    [{  SprintName = Some Option.Nullable
+    let sprintInstances = [{  
+        SprintName = Some "ExampleSprint1"
         CreatedDate = Some "03/12/2019 11:50:47"
         ClosedDate = Some "04/10/2019 11:14:04"
-        WorkItem : WorkItem list }]
+        WorkItems = []
+    }]
 
-    let projects = 
-    [{  Sprints : SprintInstance list
-        Name : string }]
+    let projects = [{  
+        Sprints = []
+        Name = "ExampleProject1" 
+    }]
 
-    let workItems = 
-    [{  LeadTimeDays = Some "28.9745023"
+    let workItems = [{  
+        LeadTimeDays = Some "28.9745023"
         CycleTimeDays = Some "7.1225925"
         StoryPoints = Some 5
         RevisedDate = Some "01/01/9999 00:00:00"
@@ -65,55 +71,23 @@ module Schema =
         SprintNumber = Some 0
         State = Some "Done"
         WorkItemType = Some "User Story"
-        WorkItemId = 81347 }]
+        WorkItemId = 81347 
+    }]
         
-    let getSprint id =
-        sprints |> List.tryFind (fun s -> s.WorkItemId = id)
+    let getSprint number =
+        sprints |> List.tryFind (fun s -> s.Number = number)
 
     let getSprintInstance name =
-        sprintInstances |> List.tryFind (fun s-> .SprintName = name)
+        sprintInstances |> List.tryFind (fun s-> s.SprintName = name)
     
     let getProject name =
         projects |> List.tryFind (fun p -> p.Name = name)
 
-    let getWorkItem title =
-        workItems |> List.tryFind (fun w -> w.title = title)
-
-    let SprintInstanceType =
-        Define.Object<SprintInstance>(
-            name = "Sprint Instance",
-            description = "A Sprint Instance",
-            fieldsFn = fun () -> 
-                [
-                    Define.Field("Sprint Name", Nullable String, "The name of the sprint.", fun _ (s : SprintInstance) -> s.SprintName)
-                    Define.Field("Created Date", Nullable String, "The date of the sprint creation", fun _ (s : SprintInstance) -> s.CreatedDate)
-                    Define.Field("Closed Date", Nullable String, "The day the sprint closed.", fun _ (s : SprintInstance) -> s.ClosedDate)
-                    Define.Field("Work Items", ListOf WorkItem, "A list of work items in the sprint.", fun _ (s : SprintInstance) -> s.WorkItem)
-                ]
-        )
-
-    let SprintType =
-        Define.Object<Sprint>(
-            name = "Sprint",
-            description = "A sprint",
-            fieldsFn = fun () ->
-                [
-                    Define.Field("Sprint Number", Nullable Int, "The number of the sprint", fun _ (s : Sprint) -> s.Number)
-                    Define.Field("Projects", ListOf Project, "Projects related to the sprint", fun _ (s : Sprint) -> s.Projects)
-                ]) 
-
-    let ProjectType =
-        Define.Object<Project>,
-            name = "Project",
-            description = "A collection of sprints",
-            fieldsFn = fun () ->
-                [
-                    Define.Field("Sprints", ListOf SprintInstance, "The sprints in the project", fun _ (p : Project) -> p.Sprints)
-                    Define.Field("Name", String, "The name of the project", fun _ (p : Project) -> p.Name)
-                ]
+    let getWorkItem id =
+        workItems |> List.tryFind (fun w -> w.WorkItemId = id)
     
     let WorkItemType =
-        Define.Object<WorkItem>,
+        Define.Object<WorkItem>(
             name = "WorkItem",
             description = "A task that needs to be done in the sprint",
             fieldsFn = fun () ->
@@ -127,8 +101,47 @@ module Schema =
                     Define.Field("SprintNumber", Nullable Int, "The  number of the sprint in a project", fun _ (w : WorkItem) -> w.Priority)
                     Define.Field("State", Nullable String, "The state of the workitem", fun _ (w : WorkItem) -> w.State)
                     Define.Field("WorkItemType", Nullable String, "The type of the workitem", fun _ (w : WorkItem) -> w.WorkItemType)
-                    Define.Field("WorkItemId", Int, "The identifier of the workitem", fun _ (w : WorkItem) -> w.ID)
+                    Define.Field("WorkItemId", Int, "The identifier of the workitem", fun _ (w : WorkItem) -> w.WorkItemId)
                 ]
+        )
+                
+    let SprintInstanceType =
+        Define.Object<SprintInstance>(
+            name = "Sprint Instance",
+            description = "A Sprint Instance",
+            fieldsFn = fun () -> 
+                [
+                    Define.Field("Sprint Name", Nullable String, "The name of the sprint.", fun _ (s : SprintInstance) -> s.SprintName)
+                    Define.Field("Created Date", Nullable String, "The date of the sprint creation", fun _ (s : SprintInstance) -> s.CreatedDate)
+                    Define.Field("Closed Date", Nullable String, "The day the sprint closed.", fun _ (s : SprintInstance) -> s.ClosedDate)
+                    Define.Field("Work Items", ListOf WorkItemType (*WorkItem*), "A list of work items in the sprint.", fun _ (s : SprintInstance) -> s.WorkItems)
+                ]
+        )
+
+    let ProjectType =
+            Define.Object<Project>(
+                name = "Project",
+                description = "A collection of sprints",
+                fieldsFn = fun () ->
+                    [
+                        Define.Field("Sprints", ListOf SprintInstanceType (*SprintInstance*), "The sprints in the project", fun _ (p : Project) -> p.Sprints)
+                        Define.Field("Name", String, "The name of the project", fun _ (p : Project) -> p.Name)
+                    ]
+            )
+
+    let SprintType =
+        Define.Object<Sprint>(
+            name = "Sprint",
+            description = "A sprint",
+            fieldsFn = fun () ->
+                [
+                    Define.Field("Sprint Number", Int, "The number of the sprint", fun _ (s : Sprint) -> s.Number)
+                    Define.Field("Projects", ListOf ProjectType (*Project*), "Projects related to the sprint", fun _ (s : Sprint) -> s.Projects)
+                ]
+        ) 
+
+    
+    
 
     let RootType =
         Define.Object<Root>(
@@ -144,8 +157,10 @@ module Schema =
         Define.Object<Root>(
             name = "Query",
             fields = [
-                Define.Field("sprint", Nullable SprintType, "Gets Sprint", [ Define.Input("id", Int) ], fun ctx _ -> getSprint (ctx.Arg("id") ) ) 
-                Define.Field("sprint", Nullable SprintType, "Gets Sprint", [ Define.Input("id", Int) ], fun ctx _ -> getSprint (ctx.Arg("id") ) )
+                Define.Field("sprint", Nullable SprintType, "Gets Sprint", [ Define.Input("number", Int) ], fun ctx _ -> getSprint (ctx.Arg("number") )) 
+                Define.Field("sprintInstance", Nullable SprintInstanceType, "Gets Instance of Sprint", [ Define.Input("name", Int) ], fun ctx _ -> getSprintInstance (ctx.Arg("name") ) )
+                Define.Field("project", Nullable ProjectType, "Gets Project", [ Define.Input("name", String) ], fun ctx _ -> getProject (ctx.Arg("name") ))
+                Define.Field("workItem", Nullable WorkItemType, "Gets WorkItem", [ Define.Input("id", Int) ], fun ctx _ -> getWorkItem (ctx.Arg("id") ))
             ] 
         )
 
