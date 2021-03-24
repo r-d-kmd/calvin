@@ -12,6 +12,7 @@
     <Compile Include="WebSocketMiddleware.fs" />
     <Compile Include="HttpHandlers.fs" />
     <Compile Include="Startup.fs" />
+    <Compile Include="jsonprovider.fs" />
     <Compile Include="Program.fs" />
     <None Include="paket.references" />
     <None Include="ApplicationInsights.config" />

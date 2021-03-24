@@ -2,3 +2,4 @@ FSharp.Core
 Giraffe
 FSharp.Data.GraphQL.Server
 FSharp.Data.Graphql.Server.Middleware
+FSharp.Data
