@@ -4,4 +4,4 @@
 
 - op: add
   path: /spec/ports/0/nodePort
-  value: 30093
+  value: 30097

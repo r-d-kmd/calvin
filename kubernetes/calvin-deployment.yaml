@@ -19,7 +19,7 @@ spec:
         # - secretRef:
         #   name: env
         imagePullPolicy: Never
-        image: calvin
+        image: calvin.service
         resources: {}
         ports:
           - containerPort: 8085
