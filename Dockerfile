@@ -6,16 +6,14 @@ ENV BUILD_CONFIGURATION ${BUILD_CONFIGURATION_ARG}
 
 ARG PORT_ARG 8085
 
-COPY paket.lock .
-COPY paket.dependencies .
-
 RUN dotnet tool restore
-RUN dotnet paket restore
 
 FROM build-base as build
 
 COPY ./src /source
 WORKDIR /source
+COPY paket.dependencies .
+COPY dotnet paket update
 
 RUN echo "dotnet \"$(expr $(ls *.?sproj) : '\(.*\)\..sproj').dll\"\n" >> /tmp/start.sh
 RUN chmod +x /tmp/start.sh
