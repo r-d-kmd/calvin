@@ -7,3 +7,6 @@ nuget Giraffe
 nuget FSharp.Data.GraphQL.Server
 nuget FSharp.Data.Graphql.Server.Middleware
 nuget FSharp.Data
+nuget Microsoft.NET.Test.Sdk
+nuget xunit
+nuget xunit.runner.visualstudio
