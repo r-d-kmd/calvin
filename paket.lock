@@ -4,6 +4,7 @@ NUGET
       FSharp.Core (>= 4.3.4) - restriction: || (>= net45) (>= netstandard2.0)
       System.ValueTuple (>= 4.4) - restriction: >= net45
     FSharp.Core (5.0.1)
+    FSharp.Data (4.0.1)
     FSharp.Data.GraphQL.Server (1.0.7)
       FParsec (>= 1.0.3) - restriction: || (>= net461) (>= netstandard2.0)
       FSharp.Core (>= 4.3.4) - restriction: || (>= net461) (>= netstandard2.0)

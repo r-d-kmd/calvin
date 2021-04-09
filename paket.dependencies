@@ -11,6 +11,7 @@ nuget Newtonsoft.Json
 nuget Suave
 nuget Giraffe
 nuget FSharp.Data.TypeProviders
+nuget Fsharp.Data
 
 group Tests
   source https://api.nuget.org/v3/index.json
