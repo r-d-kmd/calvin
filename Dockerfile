@@ -13,7 +13,7 @@ FROM build-base as build
 COPY ./src /source
 WORKDIR /source
 COPY paket.dependencies .
-COPY dotnet paket update
+RUN dotnet paket update
 
 RUN echo "dotnet \"$(expr $(ls *.?sproj) : '\(.*\)\..sproj').dll\"\n" >> /tmp/start.sh
 RUN chmod +x /tmp/start.sh
