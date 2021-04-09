@@ -6,9 +6,6 @@ ENV BUILD_CONFIGURATION ${BUILD_CONFIGURATION_ARG}
 
 ARG PORT_ARG 8085
 
-ENV PAKET_SKIP_RESTORE_TARGETS=true
-
-COPY .fake/build.fsx/.paket/Paket.Restore.targets /.paket/Paket.Restore.targets
 COPY paket.lock .
 COPY paket.dependencies .
 
