@@ -23,8 +23,11 @@ steps:
   displayName: "install docker"
 
 - script: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+  env:
+     DOCKER_USER: $(DOCKER_USER)
+     DOCKER_PASS: $(DOCKER_PASS)
   displayName: Docker login
-  
+
 - script: docker build -t kmdrd/calvin .
   displayName: "Build docker image"
 
