@@ -4,4 +4,4 @@
 
 - op: replace
   path: /spec/template/spec/containers/0/image
-  value: hobbes.azurecr.io/hobbes-calvin:latest
+  value: kmdrd/calvin:latest
