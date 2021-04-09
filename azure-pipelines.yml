@@ -5,6 +5,7 @@
 
 trigger:
 - main
+- addDockerFile
 
 pool:
   vmImage: ubuntu-latest
