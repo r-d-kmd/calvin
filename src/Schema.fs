@@ -3,7 +3,7 @@
 open FSharp.Data.GraphQL
 open FSharp.Data.GraphQL.Types
 open FSharp.Data.GraphQL.Server.Middleware
-
+open FSharp.Data.GraphQL.Samples.StarWarsApi.data
 #nowarn "40"
 
 type Episode =
@@ -39,6 +39,8 @@ type Root =
 type Character =
     | Human of Human
     | Droid of Droid
+
+
 
 module Schema =
     let humans =
@@ -90,6 +92,9 @@ module Schema =
           { Id = "3"
             Name = Some "Death Star"
             IsMoon = Some false}]
+
+    let getSprints sprintnumber =
+        sampleDataHierarchy() |> Seq.tryFind (fun p -> (fst p) = sprintnumber)
 
     let getHuman id =
         humans |> List.tryFind (fun h -> h.Id = id)
