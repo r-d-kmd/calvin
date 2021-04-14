@@ -1,0 +1,36 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+- addDockerFile
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'custom'
+    custom: 'tool'
+    arguments: 'restore'
+  displayName: "restore tools" 
+
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
+  displayName: "install docker"
+
+- script: docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+  env:
+     DOCKER_USER: $(DOCKER_USER)
+     DOCKER_PASS: $(DOCKER_PASS)
+  displayName: Docker login
+
+- script: docker build -t kmdrd/calvin .
+  displayName: "Build docker image"
+
+- script: docker push kmddk/calvin
+  displayName: 'Push image'

@@ -7,6 +7,7 @@ nuget FSharp.Data.Graphql.Server.Middleware
 nuget Microsoft.Extensions.Http 5
 nuget System.Net.Http 4.3.4
 nuget FSharp.Core
+nuget FSharp.Data
 nuget Newtonsoft.Json
 nuget Suave
 nuget Giraffe
