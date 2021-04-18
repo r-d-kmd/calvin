@@ -18,6 +18,7 @@ module Schema =
         typeDataHierarchy()
         |> Seq.collect (fun sl -> sl.Projects |> fun ps -> Seq.filter(fun p -> p.ProjectName = projectName ) ps )
         |> Seq.collect(fun x -> x.Sprints)
+        |> Seq.distinctBy(fun x -> x.SprintNumber)
     
     let getProjects sprintNumber =
         sprintNumber |> getSprintLayer
@@ -71,25 +72,12 @@ module Schema =
                 Define.Field("Projects",ListOf ProjectType, fun ctx p ->getProjects p.SprintLayerNumber)
             ]
         )
-
-
-
-    let RootType =
-        Define.Object<Root>(
-            name = "Root",
-            description = "The Root type to be passed to all our resolvers.",
-            isTypeOf = (fun o -> o :? Root),
-            fieldsFn = fun () ->
-            [
-                Define.Field("requestId", String, "The ID of the client.", fun _ (r : Root) -> r.RequestId)
-            ]
-        )
         
     let Query : ObjectDef<Root> =
         Define.Object( "Query",[
-            Define.Field("SprintLayers", ListOf SprintLayerType, fun ctx _ -> typeDataHierarchy())
-            Define.Field("Query1", ListOf SprintType, [Define.Input("sprintLayer",Nullable Int);Define.Input("ProjectName",String)], fun ctx _ -> getSprints (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
-            Define.Field("Query1", ListOf JsonProviderType, [Define.Input("sprintLayer",Nullable Int);Define.Input("ProjectName",String)], fun ctx _ -> getWorkItems (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
+            Define.Field("GetSprintLayers", ListOf SprintLayerType, fun ctx _ -> typeDataHierarchy())
+            Define.Field("GetProjectSprints", ListOf SprintType, [Define.Input("ProjectName",String)], fun ctx _ -> getProjectsSprints (ctx.Arg("ProjectName")) )
+            Define.Field("GetWorkItemsFromProjectSprint", ListOf JsonProviderType, [Define.Input("sprintLayer",Nullable Int);Define.Input("ProjectName",String)], fun ctx _ -> getWorkItems (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
         ])
     let schema  =  Schema(query = Query, config = {SchemaConfig.Default with Types = [SprintLayerType;ProjectType;SprintType;JsonProviderType]})
     let middlewares =        

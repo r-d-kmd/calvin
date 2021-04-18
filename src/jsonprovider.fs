@@ -19,7 +19,7 @@ module data =
 
 
       type Sprint = {
-         SprintNumber : int option
+         SprintNumber  : int option 
          ProjectName : string
          WorkItems : Data.Root seq
       }
@@ -34,6 +34,7 @@ module data =
          SprintLayerNumber : int option
          Projects : Project seq
       }
+
 
    type ConfigList = JsonProvider<"""[{
             "_id" : "name",
@@ -149,14 +150,15 @@ module data =
       |> Seq.map(fun (sn,records) -> 
          {
          SprintLayerNumber = sn
-         Projects = (records
-               |> Seq.map(fun record -> record.ProjectName)
-               |> Set.ofSeq
-               |> Seq.map(fun pn -> 
+         Projects = 
+            (records
+            |> Seq.map(fun record -> record.ProjectName)
+            |> Set.ofSeq
+            |> Seq.map(fun pn -> 
                {
                   ProjectName = pn
                   Sprints = 
-                  ( 
+                     ( 
                      match projectMap |> Map.tryFind pn with
                      | Some sp -> 
                         sp |>  Seq.map(fun (sp,wi) ->
@@ -164,7 +166,7 @@ module data =
                             ProjectName = pn
                             WorkItems = wi})
                      | None -> Seq.empty     
-                  )
+                     )
                })
                   )
       })
