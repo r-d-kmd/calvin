@@ -40,11 +40,14 @@ module Schema =
             |Some wi ->  wi.WorkItems
             |_ ->   Seq.empty 
 
+
+
     let rec JsonProviderType : ObjectDef<Data.Root> =
         Define.Object<Data.Root>(
             "WorkItem",
             [
                 Define.Field("ProjectName", String, fun ctx (p:Data.Root) -> p.ProjectName)
+                Define.Field("WorkItemID", Int, fun ctx (p:Data.Root) -> p.WorkItemId)
                 Define.Field("TimeStamp", Date, fun ctx p -> p.TimeStamp )
                 Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
                 ]
@@ -81,7 +84,6 @@ module Schema =
         ])
     let schema  =  Schema(query = Query, config = {SchemaConfig.Default with Types = [SprintLayerType;ProjectType;SprintType;JsonProviderType]})
     let middlewares =        
-        [ 
-          Define.LiveQueryMiddleware() ]
+        [Define.LiveQueryMiddleware()]
 
     let executor = Executor(schema, middlewares)
