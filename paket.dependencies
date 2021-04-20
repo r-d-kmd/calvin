@@ -11,7 +11,8 @@ nuget fsharp.data = 4.0.1
 nuget Newtonsoft.Json
 nuget Suave
 nuget Giraffe
-nuget fsharp.data = 4.0.1.TypeProviders
+nuget FSharp.Data.TypeProviders
+nuget Fsharp.Data
 
 group Tests
   source https://api.nuget.org/v3/index.json
