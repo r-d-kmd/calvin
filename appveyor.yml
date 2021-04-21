@@ -20,9 +20,7 @@ install:
   - docker version
   
   #install dotnet tools
-  - dotnet new tool-manifest
-  - dotnet tool install paket
-  - dotnet tool install fake-cli
+  - dotnet tool restore
   - dotnet paket update
 
 before_build:
