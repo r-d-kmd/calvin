@@ -1,7 +1,7 @@
 namespace FSharp.Data.GraphQL.Samples.StarWarsApi
 
 open FSharp.Data
-
+open Microsoft.FSharp.Linq.NullableOperators
 module data =
 
    type Data = FSharp.Data.JsonProvider<"""../example.json""">
@@ -98,14 +98,23 @@ module data =
       //configurationlist()
       datasamples
       |> Array.groupBy(fun sp -> sp.SprintNumber)
+
+      // Type SprintLayer is assigned a SprintLayerNumber
+      // and a Sequence of associated Projects.
       |> Seq.map(fun (sn,records) -> 
-         {
+         assert(match sn with
+                | Some v -> v > -1
+                | None -> true)
+         {        
          SprintLayerNumber = sn
          Projects = 
             (records
             |> Seq.map(fun record -> record.ProjectName)
             |> Set.ofSeq
+            // Type Project gets assigned with a ProjectName and a 
+            // Sequence of associated Sprints.
             |> Seq.map(fun pn -> 
+               assert(pn.Length > 0)
                {
                   ProjectName = pn
                   Sprints = 
