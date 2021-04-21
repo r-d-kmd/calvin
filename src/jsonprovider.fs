@@ -5,29 +5,22 @@ open FSharp.Data
 module data =
 
    type Data = FSharp.Data.JsonProvider<"""../example.json""">
-   (*
-   let data = 
-      Http.RequestString("",
-                          httpMethod = "get",
-                          headers = [HttpRequestHeaders.BasicAuth "bruger" "pwd"]
-      ) |> Data.Load
-   *)
 
-      type Sprint = {
-         SprintNumber  : int option 
-         ProjectName : string
-         WorkItems : Data.Root seq
-      }
+   type Sprint = {
+      SprintNumber  : int option 
+      ProjectName : string
+      WorkItems : Data.Root seq
+   }
 
-      type Project = {
-         ProjectName : string
-         Sprints : Sprint seq
-      }
+   type Project = {
+      ProjectName : string
+      Sprints : Sprint seq
+   }
 
-      type SprintLayer = {
-         SprintLayerNumber : int option
-         Projects : Project seq
-      }
+   type SprintLayer = {
+      SprintLayerNumber : int option
+      Projects : Project seq
+   }
 
    type ConfigList = JsonProvider<"""[{
             "_id" : "name",
@@ -100,22 +93,6 @@ module data =
          )
       })
    
-   let sampleDataHierarchy() = 
-      let projectMap = projectMap()
-      //configurationlist()
-      datasamples
-      |> Array.groupBy(fun sp -> sp.SprintNumber)
-      |> Seq.map(fun (sn,records) ->
-         sn,records
-            |> Seq.map(fun record -> record.ProjectName)
-            |> Set.ofSeq
-            |> Seq.map(fun pn -> 
-               match projectMap |> Map.tryFind pn with
-               |Some wi -> pn,wi
-               |None -> pn,Seq.empty
-            )
-      )
-
    let typeDataHierarchy() = 
       let projectMap = projectMap()
       //configurationlist()
