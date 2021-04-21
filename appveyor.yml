@@ -1,0 +1,34 @@
+version: 0.1.{build} 
+image: 
+  - Ubuntu
+environment:
+  
+  DOCKER_USER:
+    secure: CbwbpNPxLV9AwhjSpIz7LA==
+  DOCKER_PASS:
+    secure: /T9ITfudL23Ga+Mz7oRaVA==
+  
+  # Disable Powershell on Linux machines
+  APPVEYOR_YML_DISABLE_PS_LINUX: "true"
+  # Changes ownership of minikube config dirs to running user
+  
+services:
+  - docker
+
+install:
+  #verify docker
+  - docker version
+  
+  #install dotnet tools
+  - dotnet tool restore
+  - dotnet paket update
+
+before_build:
+  - docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}"
+  
+build_script:
+  - dotnet fake build --target build 
+  - docker build -t kmdrd/calvin .
+  - docker push kmddk/calvin
+  
+test: off
