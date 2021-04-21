@@ -27,7 +27,7 @@ before_build:
   - docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}"
   
 build_script:
-  - fake build --target build 
+  - dotnet fake build --target build 
   - docker build -t kmdrd/calvin .
   - docker push kmddk/calvin
   
