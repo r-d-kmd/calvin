@@ -20,10 +20,11 @@ install:
   - docker version
   
   #install dotnet tools
-  - dotnet tool install --global fake-cli
-  - dotnet tool install --global paket
-  - paket update
-  
+  - dotnet new tool-manifest
+  - dotnet tool install paket
+  - dotnet tool install fake-cli
+  - dotnet paket update
+
 before_build:
   - docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}"
   
