@@ -29,6 +29,6 @@ before_build:
 build_script:
   - dotnet fake build --target build 
   - docker build -t kmdrd/calvin -f Dockerfile.calvin .
-  - docker push kmddk/calvin
+  - docker push kmdrd/calvin
   
 test: off
