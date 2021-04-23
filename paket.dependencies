@@ -5,9 +5,12 @@ framework: auto-detect
 nuget fsharp.data.Graphql.Server
 nuget fsharp.data.Graphql.Server.Middleware
 nuget Microsoft.Extensions.Http 5
+nuget Microsoft.NET.Test.Sdk
 nuget System.Net.Http 4.3.4
 nuget FSharp.Core
 nuget fsharp.data = 4.0.1
+nuget xunit.runner.visualstudio
+nuget xunit
 nuget Newtonsoft.Json
 nuget Suave
 nuget Giraffe
