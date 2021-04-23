@@ -10,7 +10,7 @@ open FSharp.Data.GraphQL
 open FSharp.Data.GraphQL.Types
 open FSharp.Control.Tasks
 open Newtonsoft.Json.Linq
-
+open Schema
 type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
 
 module HttpHandlers =

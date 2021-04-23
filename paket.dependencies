@@ -2,11 +2,26 @@ version 6.0.0-beta8
 source https://api.nuget.org/v3/index.json
 framework: auto-detect
 
+nuget fsharp.data.Graphql.Server
+nuget fsharp.data.Graphql.Server.Middleware
+nuget Microsoft.Extensions.Http 5
+nuget System.Net.Http 4.3.4
 nuget FSharp.Core
+nuget fsharp.data = 4.0.1
+nuget Newtonsoft.Json
+nuget Suave
 nuget Giraffe
-nuget FSharp.Data.GraphQL.Server
-nuget FSharp.Data.Graphql.Server.Middleware
-nuget FSharp.Data
-nuget Microsoft.NET.Test.Sdk
-nuget xunit
-nuget xunit.runner.visualstudio
+nuget FSharp.Data.TypeProviders
+nuget Fsharp.Data
+
+group Tests
+  source https://api.nuget.org/v3/index.json
+  framework: auto-detect
+  storage: none
+
+  nuget Microsoft.NET.Test.Sdk
+  nuget xunit 
+  nuget xunit.runner.utility
+  nuget xunit.runner.console
+  nuget xunit.runner.visualstudio
+  nuget BenchmarkDotNet
