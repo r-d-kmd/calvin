@@ -1,0 +1,52 @@
+
+ARG DOTNET_VERSION=5.0
+FROM kmdrd/sdk:${DOTNET_VERSION} as build
+WORKDIR /source
+
+ARG BUILD_CONFIGURATION_ARG=release
+ENV BUILD_CONFIGURATION ${BUILD_CONFIGURATION_ARG}
+
+ARG FEED_PAT_ARG=""
+ARG FEED_USER_ARG=""
+ARG FEED_PASSWORD_ARG=""
+ARG BUILD_CONFIGURATION_ARG="Release"
+
+ENV BUILD_CONFIGURATION ${BUILD_CONFIGURATION_ARG}
+ENV FEED_PAT ${FEED_PAT_ARG}
+ENV FEED_USER ${FEED_USER_ARG}
+ENV FEED_PASSWORD ${FEED_PASSWORD_ARG}
+RUN if [ -n "$FEED_PAT" ]; then export FEED_USER="$FEED_PAT"; export FEED_PASSWORD="$FEED_PAT"; fi
+
+#COPY ./common/hobbes.messaging/src/Broker.fs /source/Broker.fs
+COPY ./src /source
+WORKDIR /source
+
+RUN echo "dotnet \"$(expr $(ls *.?sproj) : '\(.*\)\..sproj').dll\"\n" >> /tmp/start.sh
+RUN chmod +x /tmp/start.sh
+
+ARG MAJOR_ARG=0
+ARG MINOR_ARG=0
+ARG BUILD_VERSION_ARG=1
+
+
+ENV MAJOR=${MAJOR_ARG}
+ENV MINOR=${MINOR_ARG}
+ENV BUILD_VERSION=${BUILD_VERSION_ARG}
+COPY paket.dependencies .
+
+RUN  dotnet new tool-manifest
+RUN  dotnet tool install paket
+
+RUN dotnet tool restore
+RUN dotnet paket update
+RUN dotnet paket restore
+RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app
+
+# final stage/image
+FROM kmdrd/runtime:${DOTNET_VERSION}
+COPY --from=build /tmp/start.sh /tmp/start.sh 
+WORKDIR /app
+COPY --from=build /app .
+
+ENV port 8085
+ENTRYPOINT /tmp/start.sh
