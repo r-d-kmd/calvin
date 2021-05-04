@@ -32,3 +32,6 @@ build_script:
   - docker push kmdrd/calvin
   
 test: off
+
+test_script:
+  - dotnet test "./tests/calvin-tests.fsproj" --configuration Release--no-build
