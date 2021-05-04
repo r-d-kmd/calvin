@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calvin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calvin
+  template:
+    metadata:
+      labels:
+        app: calvin
+    spec:
+      containers:
+      - name: calvin
+        # Currently not in use, keeping it in just case
+        # envFrom:
+        # - secretRef:
+        #   name: env
+        imagePullPolicy: Never
+        image: calvin
+        resources: {}
+        ports:
+          - containerPort: 8085
+      restartPolicy: Always
+      # imagePullSecrets:
+      # - name: acr-secret
+status: {} 
