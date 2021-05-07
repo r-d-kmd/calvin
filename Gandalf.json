@@ -1,5 +1,11 @@
-[{
-    
+{
+  "_id":"gandalf workitems", 
+  "name": "gandalf workitems", 
+  "meta" : {
+       "project":"gandalf",
+       "category": "workitems"
+  },
+  "data" : [{
     "TimeStamp": "03/11/2021 10:34:15",
     "Sprint Name": null,
     "WorkItemId": 79312,
@@ -16,7 +22,6 @@
     "Sprint Number": null,
     "State": "Done"
   },{
-    
     "TimeStamp": "03/11/2021 10:34:15",
     "Sprint Name": "Iteration 3",
     "WorkItemId": 77520,
@@ -33,7 +38,6 @@
     "Sprint Number": 3,
     "State": "Done"
   },{
-    
     "TimeStamp": "03/11/2021 10:34:15",
     "Sprint Name": "Iteration 3",
     "WorkItemId": 77513,
@@ -50,7 +54,6 @@
     "Sprint Number": 3,
     "State": "Done"
   },{
-    
     "TimeStamp": "03/11/2021 10:34:15",
     "Sprint Name": null,
     "WorkItemId": 81347,
@@ -475,3 +478,4 @@
     "Sprint Number": 3,
     "State": "Done"
   }]
+}

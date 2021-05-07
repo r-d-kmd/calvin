@@ -1,4 +1,11 @@
-[{
+{
+  "_id":"flowerpot workitems", 
+  "name": "flowerpot workitems", 
+  "meta" : {
+       "project":"flowerpot",
+       "category": "workitems"
+  },
+  "data" : [{
   "Sprint Name": null,
   "WorkItemId": "442401",
   "ChangedDate": "11/19/2020 07:41:51",
@@ -505,3 +512,4 @@
   "Title": "user specific dashboards",
   "State": "Done"
 }]
+}
