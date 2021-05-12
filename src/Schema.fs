@@ -17,11 +17,11 @@ module Schema =
                 | None -> true)
         typeDataHierarchy() |> Seq.tryFind (fun sp ->  sp.SprintLayerNumber = sprintNumber)
 
-    let getProjectsSprints (projectName : string) =
-        assert(projectName.Length > 0)
+    let getProjectsSprints (sprintName : string) =
+        assert(sprintName.Length > 0)
 
         typeDataHierarchy()
-        |> Seq.collect (fun sl -> sl.Projects |> fun ps -> Seq.filter(fun p -> p.ProjectName = projectName ) ps )
+        |> Seq.collect (fun sl -> sl.Projects |> fun ps -> Seq.filter(fun p -> p.SprintName = sprintName) ps )
         |> Seq.collect(fun pr -> pr.Sprints)
         |> Seq.distinctBy(fun sp -> sp.SprintNumber)
     
@@ -39,7 +39,7 @@ module Schema =
                 | Some v -> v > -1
                 | None -> true)
         getProjects sprintNumber
-        |> Seq.tryFind(fun p -> p.ProjectName = projectName) 
+        |> Seq.tryFind(fun p -> p.SprintName = projectName) 
         |> function
            | Some w ->  w.Sprints
            | None   -> Seq.empty
@@ -58,9 +58,9 @@ module Schema =
         Define.Object<Data.Root>(
             "WorkItem",
             [
-                Define.Field("ProjectName", String, fun ctx (p:Data.Root) -> p.ProjectName)
+                Define.Field("SprintName", Nullable String, fun ctx (p:Data.Root) -> p.SprintName)
                 Define.Field("WorkItemID", Int, fun ctx (p:Data.Root) -> p.WorkItemId)
-                Define.Field("TimeStamp", Date, fun ctx p -> p.TimeStamp )
+                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.TimeStamp )
                 Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
                 ]
         )
@@ -69,15 +69,15 @@ module Schema =
         Define.Object<Sprint>(
             "Sprint",[
                 Define.Field("SprintNumber", Nullable Int,fun ctx p -> p.SprintNumber)
-                Define.Field("ProjectName", String,fun ctx p -> p.ProjectName )
-                Define.Field("WorkItems",ListOf JsonProviderType, fun ctx p -> getWorkItems p.ProjectName p.SprintNumber )
+                Define.Field("ProjectName", String,fun ctx p -> p.SprintName )
+                Define.Field("WorkItems",ListOf JsonProviderType, fun ctx p -> getWorkItems p.SprintName p.SprintNumber )
             ]
         )
     let rec  ProjectType: ObjectDef<Project> = 
         Define.Object<Project>(
             "ProjectLayer",[
-                Define.Field("ProjectName",String,fun ctx p -> p.ProjectName)
-                Define.Field("Sprints", ListOf SprintType,  fun ctx p -> getProjectsSprints p.ProjectName)
+                Define.Field("ProjectName",String,fun ctx p -> p.SprintName)
+                Define.Field("Sprints", ListOf SprintType,  fun ctx p -> getProjectsSprints p.SprintName)
             ]
         )
 
@@ -92,8 +92,8 @@ module Schema =
     let Query : ObjectDef<Root> =
         Define.Object( "Query",[
             Define.Field("GetSprintLayers", ListOf SprintLayerType, fun ctx _ -> typeDataHierarchy())
-            Define.Field("GetProjectSprints", ListOf SprintType, [Define.Input("ProjectName",String)], fun ctx _ -> getProjectsSprints (ctx.Arg("ProjectName")) )
-            Define.Field("GetWorkItemsFromProjectSprint", ListOf JsonProviderType, [Define.Input("sprintLayer",Nullable Int);Define.Input("ProjectName",String)], fun ctx _ -> getWorkItems (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
+            Define.Field("GetProjectSprints", ListOf SprintType, [Define.Input("SprintName",String)], fun ctx _ -> getProjectsSprints (ctx.Arg("SprintName")) )
+            Define.Field("GetWorkItemsFromProjectSprint", ListOf JsonProviderType, [Define.Input("sprintLayer",Nullable Int);Define.Input("SprintName",String)], fun ctx _ -> getWorkItems (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
         ])
 
     let schema = 
@@ -111,3 +111,5 @@ module Schema =
         [Define.LiveQueryMiddleware()]
 
     let executor = Executor(schema, middlewares)
+
+
