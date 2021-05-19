@@ -9,17 +9,18 @@ open FSharp.Data.GraphQL.Samples.StarWarsApi.Schema
 open FSharp.Data
 open FSharp.Data.GraphQL
 
-let runServer =
-        async {
-            let returnCode = Program.main [||]
-            Assert.Equal (returnCode, 0)
-        }
-let cancellationSource = new CancellationTokenSource()
-Async.Start (runServer, cancellationSource.Token)
+
 
 
 [<Fact>]
 let ``GET /graphql should return a HTML file`` () = async {
+    let runServer =
+        async {
+            let returnCode = Program.main [||]
+            Assert.Equal (returnCode, 0)
+        }
+    let cancellationSource = new CancellationTokenSource()
+    Async.Start (runServer, cancellationSource.Token)
 
     Thread.Sleep(1000)
     let resp = Http.Request ("http://localhost:8085/graphql")
