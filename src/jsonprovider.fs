@@ -3,7 +3,6 @@ namespace FSharp.Data.GraphQL.Samples.StarWarsApi
 open FSharp.Data
 open Microsoft.FSharp.Linq.NullableOperators
 module data =
-
    type Data = FSharp.Data.JsonProvider<"""[{
   "Sprint Name": null,
   "WorkItemId": 442401,
@@ -85,6 +84,7 @@ module data =
         }]""">
    
    let configurationlist() = 
+      try
       ConfigList.Load "http://configurations-svc:8085/meta/category/workitems"     
       |> Array.collect(fun config -> 
          let key = config.Id
@@ -96,8 +96,12 @@ module data =
             eprintfn"Exeption when calling uniformdata, defaulting to sampledata %s %s" e.Message e.StackTrace
             Data.GetSamples()
       )
+      with _ -> 
+         //eprintfn"Exeption when calling uniformdata, defaulting to sampledata %s %s" e.Message e.StackTrace
+         Data.GetSamples()
+
    
-   let datasamples = Data.GetSamples()
+   
 
    let projectMap() = 
       //datasamples

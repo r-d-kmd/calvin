@@ -100,10 +100,12 @@ module Schema =
         Schema(query = Query, 
             config = {SchemaConfig.Default 
                         with Types = 
-                            [SprintLayerType
-                            ;ProjectType
-                            ;SprintType
-                            ;JsonProviderType]
+                                [
+                                SprintLayerType
+                                ;ProjectType
+                                ;SprintType
+                                ;JsonProviderType
+                                ]
                      }
             )
     
@@ -111,5 +113,6 @@ module Schema =
         [Define.LiveQueryMiddleware()]
 
     let executor = Executor(schema, middlewares)
+
 
 

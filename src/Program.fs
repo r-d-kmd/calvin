@@ -3,6 +3,7 @@ namespace FSharp.Data.GraphQL.Samples.StarWarsApi
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Hosting
 open data
+open Schema
 module Program =
     let exitCode = 0
 
@@ -16,6 +17,5 @@ module Program =
    
     [<EntryPoint>]
     let main args =
-
         buildWebHost(args).Build().Run()
         exitCode

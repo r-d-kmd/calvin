@@ -16,6 +16,9 @@
     <None Include="paket.references" />
     <None Include="ApplicationInsights.config" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Data.GraphQL.Client" Version="1.0.7" />
+  </ItemGroup>
   <Import Condition="Exists('../../../.paket/Paket.targets')" Project="../../../.paket/Paket.targets" />
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
