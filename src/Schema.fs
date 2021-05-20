@@ -58,9 +58,9 @@ module Schema =
             "WorkItem",
             [
                 Define.Field("SprintName", String, fun ctx (p:WorkItem) -> p.ProjectName)
-                Define.Field("WorkItemID", Int, fun ctx (p:WorkItem) -> p.WorkItemId)
-                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.TimeStamp )
-                Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
+                Define.Field("WorkItemID", Int, fun ctx (p:WorkItem) -> p.WorkItemData.WorkItemId)
+                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.WorkItemData.TimeStamp )
+                Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.WorkItemData.SprintNumber)
 
             ]
         )

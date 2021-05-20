@@ -36,26 +36,11 @@ module data =
     "State": "Done"
   }]""" >
 
-   type Test = Data.Root
-
    type WorkItem = {
       ProjectName : string
-      SprintNumber : int option
-      WorkItemId : int
-      TimeStamp :  DateTime option
-      SprintName : string option
-      Priority : int option
-      State : string
-      ChangedDate:  DateTime
-      WorkItemType:  string
-      CreatedDate:  DateTime
-      ClosedDate:  DateTime
-      LeadTimeDays:  decimal
-      CycleTimeDays:  float
-      StoryPoints:  Option<int>
-      RevisedDate:  DateTime
-      Title:  string
+      WorkItemData : Data.Root
    }
+
    type Sprint = {
       SprintNumber  : int option 
       ProjectName : string
@@ -115,46 +100,18 @@ module data =
             |> Array.fold(fun state item ->
                let workItem = {
                   ProjectName = key
-                  SprintNumber = item.SprintNumber
-                  WorkItemId = item.WorkItemId
-                  TimeStamp = item.TimeStamp
-                  SprintName = item.SprintName
-                  Priority = item.Priority
-                  State = item.State
-                  ChangedDate = item.ChangedDate
-                  WorkItemType = item.WorkItemType
-                  CreatedDate = item.CreatedDate
-                  ClosedDate = item.ClosedDate
-                  LeadTimeDays = item.LeadTimeDays
-                  CycleTimeDays = item.CycleTimeDays
-                  StoryPoints = item.StoryPoints
-                  RevisedDate = item.RevisedDate
-                  Title = item.Title
-               } 
+                  WorkItemData = item
+               }
                workItem :: state) List.empty
             |> Array.ofList
          with e -> 
             eprintfn"Exeption when calling uniformdata, defaulting to sampledata %s %s" e.Message e.StackTrace
             Data.GetSamples()
-            |> Array.fold(fun state item ->
+            |> Array.fold(fun state item ->            
                let workItem = {
                   ProjectName = key
-                  SprintNumber = item.SprintNumber
-                  WorkItemId = item.WorkItemId
-                  TimeStamp = item.TimeStamp
-                  SprintName = item.SprintName
-                  Priority = item.Priority
-                  State = item.State
-                  ChangedDate = item.ChangedDate
-                  WorkItemType = item.WorkItemType
-                  CreatedDate = item.CreatedDate
-                  ClosedDate = item.ClosedDate
-                  LeadTimeDays = item.LeadTimeDays
-                  CycleTimeDays = item.CycleTimeDays
-                  StoryPoints = item.StoryPoints
-                  RevisedDate = item.RevisedDate
-                  Title = item.Title
-               } 
+                  WorkItemData = item
+               }
                workItem :: state) List.empty
             |> Array.ofList
       )
@@ -163,23 +120,9 @@ module data =
          Data.GetSamples()
          |> Array.fold(fun state item ->
                let workItem = {
-                  ProjectName = "failure"
-                  SprintNumber = item.SprintNumber
-                  WorkItemId = item.WorkItemId
-                  TimeStamp = item.TimeStamp
-                  SprintName = item.SprintName
-                  Priority = item.Priority
-                  State = item.State
-                  ChangedDate = item.ChangedDate
-                  WorkItemType = item.WorkItemType
-                  CreatedDate = item.CreatedDate
-                  ClosedDate = item.ClosedDate
-                  LeadTimeDays = item.LeadTimeDays
-                  CycleTimeDays = item.CycleTimeDays
-                  StoryPoints = item.StoryPoints
-                  RevisedDate = item.RevisedDate
-                  Title = item.Title
-               } 
+                  ProjectName = "key"
+                  WorkItemData = item
+               }
                workItem :: state) List.empty
          |> Array.ofList
 
@@ -192,7 +135,7 @@ module data =
       |> Seq.groupBy(fun p -> p.ProjectName)
       |> Seq.map(fun (pn,record) -> 
          pn,record 
-            |> Seq.groupBy(fun project -> project.SprintNumber)
+            |> Seq.groupBy(fun project -> project.WorkItemData.SprintNumber)
          ) 
          |> Map.ofSeq  
 (*
@@ -231,7 +174,7 @@ module data =
       let projectMap = projectMap()
       configurationlist()
       //datasamples
-      |> Array.groupBy(fun sp -> sp.SprintNumber)
+      |> Array.groupBy(fun sp -> sp.WorkItemData.SprintNumber)
       // Type SprintLayer is assigned a SprintLayerNumber
       // and a Sequence of associated Projects.
       |> Seq.map(fun (sn,records) -> 

@@ -41,7 +41,7 @@ let GetSprintLayersReturnsSampleDataExpectedSprintlayers () =  async {
     }
         """
 
-    let expected = """[data, { GetSprintLayers: [{ SprintNumber: null }, { SprintNumber: 5 }, ] }]]"""
+    let expected = """[data, { GetSprintLayers: [{ SprintNumber: 5 }, { SprintNumber: null }, ] }]]"""
 
 
     let! response = Schema.executor.AsyncExecute(query)
@@ -61,8 +61,9 @@ let GetSprintLayersReturnsSampleDataExpectedProjects () = async {
        }
     }
     """
-    let expected = """path: ["GetSprintLayers", 0, "Projects", 0, "ProjectName", ] }]]],"""
-
+    let expected = """      [data, { GetSprintLayers: [{ SprintNumber: 5,
+                                Projects: [{ ProjectName: "failure" }, ] }, { SprintNumber: null,
+                                Projects: [{ ProjectName: "failure" }, ] }, ] }]],"""
 
     let! response = Schema.executor.AsyncExecute(query)
     let actual = response.Content.ToString()
