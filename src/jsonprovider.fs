@@ -4,6 +4,7 @@ open FSharp.Data
 open Microsoft.FSharp.Linq.NullableOperators
 open System
 module data =
+(*
    type Data = FSharp.Data.JsonProvider<"""[{
   "Sprint Name": null,
   "WorkItemId": 442401,
@@ -34,25 +35,62 @@ module data =
     "Title": "Cake celebration at this point",
     "Sprint Number": 5,
     "State": "Done"
+  }]""" >*)
+
+   type Data = FSharp.Data.JsonProvider<"""
+   [{
+     "Sprint Name": null,
+     "WorkItemId": 442401,
+     "ChangedDate": "11/19/2020 07:41:51",
+     "WorkItemType": "User Story",
+     "CreatedDate": "09/21/2020 18:50:11",
+     "ClosedDate": "11/19/2020 07:41:51",
+     "LeadTimeDays": "58.5358796",
+     "CycleTimeDays": "3.47E-05",
+     "StoryPoints": 2,
+     "RevisedDate": "01/01/9999 00:00:00",
+     "Title": "Web UI for visualiser",
+     "State": "Done",
+     "Sprint Number" : null
+   }, {
+    "TimeStamp": "03/11/2021 10:34:15",
+    "Sprint Name": "null",
+    "WorkItemId": 79312,
+    "ChangedDate": "04/30/2019 14:57:50",
+    "WorkItemType": "User Story",
+    "CreatedDate": "02/27/2019 12:27:11",
+    "ClosedDate": "04/30/2019 14:57:50",
+    "LeadTimeDays": "62.104618",
+    "CycleTimeDays": "27.2778819",
+    "StoryPoints": null,
+    "RevisedDate": "01/01/9999 00:00:00",
+    "Priority": 2,
+    "Title": "Cake celebration at this point",
+    "Sprint Number": 5,
+    "State": "Done"
+  }, {
+      "projectName": "CFIX - ITU Project",
+      "createdDate": "04/08/2021 08:25:31 +00:00",
+      "sprintName": "Backlog",
+      "sprintNumber": null,
+      "closedDate": null,
+      "title": "PRODUCT GOAL"
+  }, {
+      "projectName": "CFIX - ITU Project",
+      "createdDate": "04/06/2021 12:45:21 +00:00",
+      "sprintName": "Sprint 3",
+      "sprintNumber": 3,
+      "closedDate": "05/05/2021 11:10:03 +00:00",
+      "title": "GraphQL for existing data in Hobbes - 13 Story Points"
   }]""" >
 
    type WorkItem = {
       ProjectName : string
       SprintNumber : int option
-      WorkItemId : int
-      TimeStamp :  DateTime option
       SprintName : string option
-      Priority : int option
-      State : string
-      ChangedDate:  DateTime
-      WorkItemType:  string
-      CreatedDate:  DateTime
-      ClosedDate:  DateTime
-      LeadTimeDays:  decimal
-      CycleTimeDays:  float
-      StoryPoints:  Option<int>
-      RevisedDate:  DateTime
-      Title:  string
+      CreatedDate:  DateTime option
+      ClosedDate:  DateTime option
+      Title:  string option
    }
 
    type Sprint = {
@@ -115,19 +153,9 @@ module data =
                let workItem = {
                   ProjectName = key
                   SprintNumber = item.SprintNumber
-                  WorkItemId = item.WorkItemId
-                  TimeStamp = item.TimeStamp
                   SprintName = item.SprintName
-                  Priority = item.Priority
-                  State = item.State
-                  ChangedDate = item.ChangedDate
-                  WorkItemType = item.WorkItemType
                   CreatedDate = item.CreatedDate
                   ClosedDate = item.ClosedDate
-                  LeadTimeDays = item.LeadTimeDays
-                  CycleTimeDays = item.CycleTimeDays
-                  StoryPoints = item.StoryPoints
-                  RevisedDate = item.RevisedDate
                   Title = item.Title
                }
                workItem :: state) List.empty
@@ -139,19 +167,9 @@ module data =
                let workItem = {
                   ProjectName = key
                   SprintNumber = item.SprintNumber
-                  WorkItemId = item.WorkItemId
-                  TimeStamp = item.TimeStamp
                   SprintName = item.SprintName
-                  Priority = item.Priority
-                  State = item.State
-                  ChangedDate = item.ChangedDate
-                  WorkItemType = item.WorkItemType
                   CreatedDate = item.CreatedDate
                   ClosedDate = item.ClosedDate
-                  LeadTimeDays = item.LeadTimeDays
-                  CycleTimeDays = item.CycleTimeDays
-                  StoryPoints = item.StoryPoints
-                  RevisedDate = item.RevisedDate
                   Title = item.Title
                }
                workItem :: state) List.empty
@@ -164,19 +182,9 @@ module data =
                let workItem = {
                   ProjectName = "key"
                   SprintNumber = item.SprintNumber
-                  WorkItemId = item.WorkItemId
-                  TimeStamp = item.TimeStamp
                   SprintName = item.SprintName
-                  Priority = item.Priority
-                  State = item.State
-                  ChangedDate = item.ChangedDate
-                  WorkItemType = item.WorkItemType
                   CreatedDate = item.CreatedDate
                   ClosedDate = item.ClosedDate
-                  LeadTimeDays = item.LeadTimeDays
-                  CycleTimeDays = item.CycleTimeDays
-                  StoryPoints = item.StoryPoints
-                  RevisedDate = item.RevisedDate
                   Title = item.Title
                }
                workItem :: state) List.empty

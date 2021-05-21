@@ -58,22 +58,11 @@ module Schema =
             "WorkItem",
             [
                 Define.Field("SprintName", String, fun ctx (p:WorkItem) -> p.ProjectName)
-                Define.Field("WorkItemID", Int, fun ctx (p:WorkItem) -> p.WorkItemId)
-                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.TimeStamp )
+                Define.Field("WorkItemID", Nullable String, fun ctx (p:WorkItem) -> p.Title)
+                Define.Field("CreatedDate", Nullable Date, fun ctx p -> p.CreatedDate )
                 Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
 
             ]
-        )
-
-    let rec JsonProviderType : ObjectDef<Data.Root> =
-        Define.Object<Data.Root>(
-            "WorkItem",
-            [
-                Define.Field("SprintName", Nullable String, fun ctx (p:Data.Root) -> p.SprintName)
-                Define.Field("WorkItemID", Int, fun ctx (p:Data.Root) -> p.WorkItemId)
-                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.TimeStamp )
-                Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
-                ]
         )
 
     let rec SprintType: ObjectDef<Sprint> =
@@ -115,7 +104,7 @@ module Schema =
                                 SprintLayerType
                                 ;ProjectType
                                 ;SprintType
-                                ;JsonProviderType
+                                ;WorkItemType
                                 ]
                      }
             )
