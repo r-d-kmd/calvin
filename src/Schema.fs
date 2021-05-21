@@ -92,8 +92,8 @@ module Schema =
     let Query : ObjectDef<Root> =
         Define.Object( "Query",[
             Define.Field("GetSprintLayers", ListOf SprintLayerType, fun ctx _ -> typeDataHierarchy())
-            Define.Field("GetProjectSprints", ListOf SprintType, [Define.Input("SprintName",String)], fun ctx _ -> getProjectsSprints (ctx.Arg("SprintName")) )
-            Define.Field("GetWorkItemsFromProjectSprint", ListOf WorkItemType, [Define.Input("sprintLayer",Nullable Int);Define.Input("SprintName",String)], fun ctx _ -> getWorkItems (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
+            Define.Field("GetProjectSprints", ListOf SprintType, [Define.Input("ProjectName",String)], fun ctx _ -> getProjectsSprints (ctx.Arg("ProjectName")) )
+            Define.Field("GetWorkItemsFromProjectSprint", ListOf WorkItemType, [Define.Input("sprintLayer",Nullable Int);Define.Input("ProjectName",String)], fun ctx _ -> getWorkItems (ctx.Arg("ProjectName")) (ctx.Arg("sprintLayer")) )
         ])
 
     let schema = 
