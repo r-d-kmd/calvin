@@ -68,6 +68,22 @@ module data =
     "Title": "Cake celebration at this point",
     "Sprint Number": 5,
     "State": "Done"
+  },{
+    "TimeStamp": "03/11/2021 10:34:15",
+    "Sprint Name": "null",
+    "WorkItemId": 79312,
+    "ChangedDate": "04/30/2019 14:57:50",
+    "WorkItemType": "User Story",
+    "CreatedDate": "02/27/2019 12:27:11",
+    "ClosedDate": "",
+    "LeadTimeDays": "",
+    "CycleTimeDays": "",
+    "StoryPoints": null,
+    "RevisedDate": "01/01/9999 00:00:00",
+    "Priority": 2,
+    "Title": "Cake celebration at this point",
+    "Sprint Number": 5,
+    "State": "Done"
   }, {
       "projectName": "CFIX - ITU Project",
       "createdDate": "04/08/2021 08:25:31 +00:00",
@@ -165,7 +181,7 @@ module data =
             Data.GetSamples()
             |> Array.fold(fun state item ->            
                let workItem = {
-                  ProjectName = key
+                  ProjectName = key + " FROM DATA SAMPLE"
                   SprintNumber = item.SprintNumber
                   SprintName = item.SprintName
                   CreatedDate = item.CreatedDate
