@@ -38,7 +38,21 @@ module data =
 
    type WorkItem = {
       ProjectName : string
-      WorkItemData : Data.Root
+      SprintNumber : int option
+      WorkItemId : int
+      TimeStamp :  DateTime option
+      SprintName : string option
+      Priority : int option
+      State : string
+      ChangedDate:  DateTime
+      WorkItemType:  string
+      CreatedDate:  DateTime
+      ClosedDate:  DateTime
+      LeadTimeDays:  decimal
+      CycleTimeDays:  float
+      StoryPoints:  Option<int>
+      RevisedDate:  DateTime
+      Title:  string
    }
 
    type Sprint = {
@@ -100,7 +114,21 @@ module data =
             |> Array.fold(fun state item ->
                let workItem = {
                   ProjectName = key
-                  WorkItemData = item
+                  SprintNumber = item.SprintNumber
+                  WorkItemId = item.WorkItemId
+                  TimeStamp = item.TimeStamp
+                  SprintName = item.SprintName
+                  Priority = item.Priority
+                  State = item.State
+                  ChangedDate = item.ChangedDate
+                  WorkItemType = item.WorkItemType
+                  CreatedDate = item.CreatedDate
+                  ClosedDate = item.ClosedDate
+                  LeadTimeDays = item.LeadTimeDays
+                  CycleTimeDays = item.CycleTimeDays
+                  StoryPoints = item.StoryPoints
+                  RevisedDate = item.RevisedDate
+                  Title = item.Title
                }
                workItem :: state) List.empty
             |> Array.ofList
@@ -110,7 +138,21 @@ module data =
             |> Array.fold(fun state item ->            
                let workItem = {
                   ProjectName = key
-                  WorkItemData = item
+                  SprintNumber = item.SprintNumber
+                  WorkItemId = item.WorkItemId
+                  TimeStamp = item.TimeStamp
+                  SprintName = item.SprintName
+                  Priority = item.Priority
+                  State = item.State
+                  ChangedDate = item.ChangedDate
+                  WorkItemType = item.WorkItemType
+                  CreatedDate = item.CreatedDate
+                  ClosedDate = item.ClosedDate
+                  LeadTimeDays = item.LeadTimeDays
+                  CycleTimeDays = item.CycleTimeDays
+                  StoryPoints = item.StoryPoints
+                  RevisedDate = item.RevisedDate
+                  Title = item.Title
                }
                workItem :: state) List.empty
             |> Array.ofList
@@ -121,7 +163,21 @@ module data =
          |> Array.fold(fun state item ->
                let workItem = {
                   ProjectName = "key"
-                  WorkItemData = item
+                  SprintNumber = item.SprintNumber
+                  WorkItemId = item.WorkItemId
+                  TimeStamp = item.TimeStamp
+                  SprintName = item.SprintName
+                  Priority = item.Priority
+                  State = item.State
+                  ChangedDate = item.ChangedDate
+                  WorkItemType = item.WorkItemType
+                  CreatedDate = item.CreatedDate
+                  ClosedDate = item.ClosedDate
+                  LeadTimeDays = item.LeadTimeDays
+                  CycleTimeDays = item.CycleTimeDays
+                  StoryPoints = item.StoryPoints
+                  RevisedDate = item.RevisedDate
+                  Title = item.Title
                }
                workItem :: state) List.empty
          |> Array.ofList
@@ -135,7 +191,7 @@ module data =
       |> Seq.groupBy(fun p -> p.ProjectName)
       |> Seq.map(fun (pn,record) -> 
          pn,record 
-            |> Seq.groupBy(fun project -> project.WorkItemData.SprintNumber)
+            |> Seq.groupBy(fun project -> project.SprintNumber)
          ) 
          |> Map.ofSeq  
 (*
@@ -174,7 +230,7 @@ module data =
       let projectMap = projectMap()
       configurationlist()
       //datasamples
-      |> Array.groupBy(fun sp -> sp.WorkItemData.SprintNumber)
+      |> Array.groupBy(fun sp -> sp.SprintNumber)
       // Type SprintLayer is assigned a SprintLayerNumber
       // and a Sequence of associated Projects.
       |> Seq.map(fun (sn,records) -> 

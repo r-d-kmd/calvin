@@ -17,10 +17,10 @@ module Schema =
                 | None -> true)
         typeDataHierarchy() |> Seq.tryFind (fun sp ->  sp.SprintLayerNumber = sprintNumber)
 
-    let getProjectsSprints (ProjectName : string) =
-        assert(ProjectName.Length > 0)
+    let getProjectsSprints (projectName : string) =
+        assert(projectName.Length > 0)
         typeDataHierarchy()
-        |> Seq.collect (fun sl -> sl.Projects |> fun ps -> Seq.filter(fun p -> p.ProjectName = ProjectName) ps )
+        |> Seq.collect (fun sl -> sl.Projects |> fun ps -> Seq.filter(fun p -> p.ProjectName = projectName) ps )
         |> Seq.collect(fun pr -> pr.Sprints)
         |> Seq.distinctBy(fun sp -> sp.SprintNumber)
     
@@ -58,9 +58,9 @@ module Schema =
             "WorkItem",
             [
                 Define.Field("SprintName", String, fun ctx (p:WorkItem) -> p.ProjectName)
-                Define.Field("WorkItemID", Int, fun ctx (p:WorkItem) -> p.WorkItemData.WorkItemId)
-                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.WorkItemData.TimeStamp )
-                Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.WorkItemData.SprintNumber)
+                Define.Field("WorkItemID", Int, fun ctx (p:WorkItem) -> p.WorkItemId)
+                Define.Field("TimeStamp", Nullable Date, fun ctx p -> p.TimeStamp )
+                Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
 
             ]
         )
