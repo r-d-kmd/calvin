@@ -41,7 +41,7 @@ let GetSprintLayersReturnsSampleDataExpectedSprintlayers () =  async {
     }
         """
 
-    let expected = """[data, { GetSprintLayers: [{ SprintNumber: 5 }, { SprintNumber: null }, ] }]]"""
+    let expected = """      [data, { GetSprintLayers: [{ SprintNumber: null }, { SprintNumber: 5 }, ] }]]"""
 
 
     let! response = Schema.executor.AsyncExecute(query)
@@ -61,15 +61,18 @@ let GetSprintLayersReturnsSampleDataExpectedProjects () = async {
        }
     }
     """
-    let expected = """      [data, { GetSprintLayers: [{ SprintNumber: 5,
-                                Projects: [{ ProjectName: "failure" }, ] }, { SprintNumber: null,
-                                Projects: [{ ProjectName: "failure" }, ] }, ] }]],"""
+    let expected = """[data,{GetSprintLayers:[{SprintNumber:null,
+Projects:[{ProjectName:"key"},]},{SprintNumber:5,
+Projects:[{ProjectName:"key"},]},]}]],"""
 
     let! response = Schema.executor.AsyncExecute(query)
-    let actual = response.Content.ToString()
+    let actual = response.Content.ToString().Replace(" ", "").Replace("\t", "").Replace("\r", "")
+    printfn "----------------------------------------------- \n
+    Expected: \t %A \n
+    Output: \t %A \n
+    -----------------------------------------------" expected actual
     Assert.Contains(expected, actual)
 }
-
 
 
 (*

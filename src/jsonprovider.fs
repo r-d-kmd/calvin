@@ -160,12 +160,17 @@ module data =
    
    let configurationlist() = 
       try
-      ConfigList.Load "http://127.0.0.1:8086/meta/category/workitems"     
+      ConfigList.Load "http://configurations-svc:8086/meta/category/workitems"     
       |> Array.collect(fun config -> 
          let key = config.Id
          try 
-            key 
-            |> sprintf"http://192.168.39.208:30506/dataset/read/%s"
+            let url = 
+               key 
+               |> sprintf"http://uniformdata-svc:8085/dataset/read/%s"       
+            let httpRequest = Http.Request(url,
+                                             silentHttpErrors = true)
+            if httpRequest.StatusCode = 404 then Array.empty else
+            key
             |> Data.Load
             |> Array.fold(fun state item ->
                let workItem = {
