@@ -1,0 +1,135 @@
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script>
+        window.onload=function() {
+            const margin = {top: 10, right: 30, bottom: 30, left: 60},
+                width = 460 - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+            const svg = d3.select("#chart")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+            const q = `# Write your query or mutation here
+                        {
+                        GetSprintLayers{
+                            Projects{
+                            Sprints{
+                                SprintNumber
+                                WorkItems{
+                                SprintName
+                                SprintNumber
+                                CreatedDate
+                                ClosedDate
+                                WorkItemID
+                                }
+                            }
+                            }
+                        }
+                        }`;
+            async function postData(url = '', data = {}) {
+            const response = await fetch(url, {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                body: JSON.stringify(data) // body data type must match "Content-Type" header
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+            }
+
+            postData('/graphql', {"operationName":null,"variables":{},"query":q})
+            .then(response => {
+                console.log(response);
+                const sprintData = response.data.getSprintLayers[0].projects[0].sprints;
+                const closedWorkItems = sprintData
+                    .reduce((acc, e) => [ ...acc, ...e.workItems ], [])
+                    .map(e => ({
+                        ...e,
+                        closedDate: e.closedDate ? Date.parse(e.closedDate) : 0,
+                        createdDate: Date.parse(e.createdDate),
+                    }))
+                    .filter(e => e.closedDate !== 0)
+                const sprints = closedWorkItems
+                    .reduce((acc, e) => {
+                        if(acc[e.sprintNumber]) {
+                            acc[e.sprintNumber].value += 1;
+                        } else {
+                            acc[e.sprintNumber] = { value: 1, sprintNumber: e.sprintNumber };
+                        }
+                        return acc;
+                    }, {});
+                console.log(sprints);
+                const sprintList = Object
+                    .values(sprints)
+                    .reduce((acc, sprintNumber) => {console.log(sprintNumber);acc.push(sprintNumber); return acc;}, [])
+                    .sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1)
+                console.log(sprintList);
+                //taskList.map(e => console.log(`${e.sprintNumber} ${e.workItemID} ${new Date(e.closedDate)}`))
+
+                /*
+                [2, 2, 2]
+                [6, 4, 2]
+                */
+                const burnDown = sprintList
+                    .map(function(e, i) {
+                        let sum = 0;
+                        for (let j = i; j < sprintList.length; j++) {
+                            const element = sprintList[j];
+                            sum += element.value;
+                            console.log(i, j, sum)
+                        }
+                        return {
+                            value: sum,
+                            sprintNumber: e.sprintNumber - 1,
+                        };
+                    })
+                    //.sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1);
+                burnDown.push({ value: 0, sprintNumber: burnDown.length });
+                console.log(burnDown);
+                const data = burnDown;
+
+                var x = d3.scaleLinear()
+                  .domain(d3.extent(data, function(d) { return d.sprintNumber; }))
+                  .range([ 0, width ]);
+                svg.append("g")
+                  .attr("transform", "translate(0," + height + ")")
+                  .call(
+                    d3.axisBottom(x)
+                      .ticks(burnDown.length)
+                  );
+
+                // Add Y axis
+                var y = d3.scaleLinear()
+                  .domain([0, d3.max(data, function(d) { return +d.value; })])
+                  .range([ height, 0 ]);
+                svg.append("g")
+                  .call(d3.axisLeft(y));
+
+                // Add the line
+                svg.append("path")
+                  .datum(data)
+                  .attr("fill", "none")
+                  .attr("stroke", "steelblue")
+                  .attr("stroke-width", 1.5)
+                  .attr("d", d3.line()
+                      .x(function(d) { return x(d.sprintNumber) })
+                      .y(function(d) { return y(d.value) })
+                  )
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="chart"></div>
+</body>
+</html>
