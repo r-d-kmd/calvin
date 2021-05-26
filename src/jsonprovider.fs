@@ -162,8 +162,13 @@ module data =
       |> Array.collect(fun config -> 
          let key = config.Id
          try 
-            key 
-            |> sprintf"http://uniformdata-svc:8085/dataset/read/%s"
+            let url = 
+               key 
+               |> sprintf"http://uniformdata-svc:8085/dataset/read/%s"       
+            let httpRequest = Http.Request(url,
+                                             silentHttpErrors = true)
+            if httpRequest.StatusCode = 404 then Array.empty else
+            key
             |> Data.Load
             |> Array.fold(fun state item ->
                let workItem = {
