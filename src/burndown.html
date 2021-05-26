@@ -1,11 +1,29 @@
 <html>
 <head>
     <script src="https://d3js.org/d3.v4.js"></script>
+    <style>
+        html,body{
+            margin: 0px;
+            padding: 0px;
+            background-color: #3876b7;
+        }
+        #chart {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height: 100vh;
+        }
+        text {
+            font-family: Verdana,sans-serif;
+            fill: white;
+        }
+    </style>
     <script>
         window.onload=function() {
-            const margin = {top: 10, right: 30, bottom: 30, left: 60},
-                width = 460 - margin.left - margin.right,
+            const margin = {top: 20, right: 30, bottom: 100, left: 120},
+                width = 800 - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
+            const axisSpacing = 30;
             const svg = d3.select("#chart")
             .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -49,7 +67,6 @@
 
             postData('/graphql', {"operationName":null,"variables":{},"query":q})
             .then(response => {
-                console.log(response);
                 const sprintData = response.data.getSprintLayers[0].projects[0].sprints;
                 const closedWorkItems = sprintData
                     .reduce((acc, e) => [ ...acc, ...e.workItems ], [])
@@ -58,7 +75,7 @@
                         closedDate: e.closedDate ? Date.parse(e.closedDate) : 0,
                         createdDate: Date.parse(e.createdDate),
                     }))
-                    .filter(e => e.closedDate !== 0)
+                    .filter(e => e.closedDate !== 0 || e.workItemID.startsWith("[ACTION]"))
                 const sprints = closedWorkItems
                     .reduce((acc, e) => {
                         if(acc[e.sprintNumber]) {
@@ -68,13 +85,11 @@
                         }
                         return acc;
                     }, {});
-                console.log(sprints);
                 const sprintList = Object
                     .values(sprints)
-                    .reduce((acc, sprintNumber) => {console.log(sprintNumber);acc.push(sprintNumber); return acc;}, [])
+                    .reduce((acc, sprintNumber) => {acc.push(sprintNumber); return acc;}, [])
                     .sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1)
-                console.log(sprintList);
-                //taskList.map(e => console.log(`${e.sprintNumber} ${e.workItemID} ${new Date(e.closedDate)}`))
+                //taskList.map(e => con sole.log(`${e.sprintNumber} ${e.workItemID} ${new Date(e.closedDate)}`))
 
                 /*
                 [2, 2, 2]
@@ -86,7 +101,6 @@
                         for (let j = i; j < sprintList.length; j++) {
                             const element = sprintList[j];
                             sum += element.value;
-                            console.log(i, j, sum)
                         }
                         return {
                             value: sum,
@@ -95,17 +109,18 @@
                     })
                     //.sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1);
                 burnDown.push({ value: 0, sprintNumber: burnDown.length });
-                console.log(burnDown);
                 const data = burnDown;
 
+                // Add X axis
                 var x = d3.scaleLinear()
                   .domain(d3.extent(data, function(d) { return d.sprintNumber; }))
                   .range([ 0, width ]);
                 svg.append("g")
-                  .attr("transform", "translate(0," + height + ")")
+                  .attr("transform", "translate(0," + (height + axisSpacing) + ")")
                   .call(
                     d3.axisBottom(x)
                       .ticks(burnDown.length)
+                      .tickSize(-height)
                   );
 
                 // Add Y axis
@@ -113,20 +128,56 @@
                   .domain([0, d3.max(data, function(d) { return +d.value; })])
                   .range([ height, 0 ]);
                 svg.append("g")
-                  .call(d3.axisLeft(y));
+                  .attr("transform", "translate("+ (-axisSpacing) + ",0)")
+                  .call(
+                    d3.axisLeft(y)
+                      .tickSize(-width*1.1)
+                  );
+
+                // Style tick-lines to work as a grid
+                svg.selectAll(".tick line").attr("stroke", "#67a4e3")
+                svg.selectAll(".tick text").attr("font-size", 18)
+
+                // Not sure why this suddenly shows up
+                svg.selectAll(".domain").attr("display", "none")
+
+                svg.append("text")
+                  .attr("text-anchor", "middle")
+                  .attr("x", width/2)
+                  .attr("y", height + margin.bottom/2 + axisSpacing)
+                  .text("Sprint");
+
+                svg.append("text")
+                  .attr("text-anchor", "middle")
+                  .attr("x", width/2)
+                  .attr("y", 20)
+                  .attr("font-size", 32)
+                  .text("Workitems completed");
 
                 // Add the line
                 svg.append("path")
                   .datum(data)
                   .attr("fill", "none")
-                  .attr("stroke", "steelblue")
-                  .attr("stroke-width", 1.5)
+                  .attr("stroke", "white")
+                  .attr("stroke-width", 6)
                   .attr("d", d3.line()
                       .x(function(d) { return x(d.sprintNumber) })
                       .y(function(d) { return y(d.value) })
                   )
-            });
-        }
+                // Add dots
+                svg.append('g')
+                  .selectAll("dot")
+                  .data(data)
+                  .enter()
+                  .append("circle")
+                    .attr("cx", function (d) { return x(d.sprintNumber); } )
+                    .attr("cy", function (d) { return y(d.value); } )
+                    .attr("r", 16)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 4)
+                    .style("fill", function (d) { return "#3876b7" } )
+                          });
+                      }
     </script>
 </head>
 <body>
