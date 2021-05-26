@@ -85,6 +85,7 @@ module data =
     "Sprint Number": 5,
     "State": "Done"
   }, {
+      "workItemId": 1200168627503521,
       "projectName": "CFIX - ITU Project",
       "createdDate": "04/08/2021 08:25:31 +00:00",
       "sprintName": "Backlog",
@@ -92,6 +93,7 @@ module data =
       "closedDate": null,
       "title": "PRODUCT GOAL"
   }, {
+      "workItemId": 1200157973471618,
       "projectName": "CFIX - ITU Project",
       "createdDate": "04/06/2021 12:45:21 +00:00",
       "sprintName": "Sprint 3",
@@ -158,21 +160,21 @@ module data =
    
    let configurationlist() = 
       try
-      ConfigList.Load "http://configurations-svc:8085/meta/category/workitems"     
+      ConfigList.Load "http://127.0.0.1:8086/meta/category/workitems"     
       |> Array.collect(fun config -> 
          let key = config.Id
          try 
             key 
-            |> sprintf"http://uniformdata-svc:8085/dataset/read/%s"
+            |> sprintf"http://192.168.39.208:30506/dataset/read/%s"
             |> Data.Load
             |> Array.fold(fun state item ->
                let workItem = {
                   ProjectName = key
-                  SprintNumber = item.SprintNumber
-                  SprintName = item.SprintName
-                  CreatedDate = item.CreatedDate
-                  ClosedDate = item.ClosedDate
-                  Title = item.Title
+                  SprintNumber = if Option.isSome item.SprintNumber then item.SprintNumber else item.SprintNumber2
+                  SprintName = if Option.isSome item.SprintName then item.SprintName else item.SprintName2
+                  CreatedDate = if Option.isSome item.CreatedDate then item.CreatedDate else if Option.isSome item.CreatedDate2 then Some (Option.get item.CreatedDate2).UtcDateTime else None
+                  ClosedDate = if Option.isSome item.ClosedDate then item.ClosedDate else if Option.isSome item.ClosedDate2 then Some (Option.get item.ClosedDate2).UtcDateTime else None
+                  Title = if Option.isSome item.Title then item.Title else item.Title2
                }
                workItem :: state) List.empty
             |> Array.ofList
@@ -191,8 +193,8 @@ module data =
                workItem :: state) List.empty
             |> Array.ofList
       )
-      with _ -> 
-         //eprintfn"Exeption when calling uniformdata, defaulting to sampledata %s %s" e.Message e.StackTrace
+      with e -> 
+         eprintfn"Exeption when calling uniformdata, defaulting to sampledata %s %s" e.Message e.StackTrace
          Data.GetSamples()
          |> Array.fold(fun state item ->
                let workItem = {

@@ -60,6 +60,7 @@ module Schema =
                 Define.Field("SprintName", String, fun ctx (p:WorkItem) -> p.ProjectName)
                 Define.Field("WorkItemID", Nullable String, fun ctx (p:WorkItem) -> p.Title)
                 Define.Field("CreatedDate", Nullable Date, fun ctx p -> p.CreatedDate )
+                Define.Field("ClosedDate", Nullable Date, fun ctx p -> p.ClosedDate )
                 Define.Field("SprintNumber", Nullable Int, fun ctx p -> p.SprintNumber)
 
             ]
