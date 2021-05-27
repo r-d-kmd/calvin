@@ -29,22 +29,22 @@ module HTMLFiles =
                         width = 800 - margin.left - margin.right,
                         height = 400 - margin.top - margin.bottom;
                     const axisSpacing = 30;
-                    const q = `# Write your query or mutation here
-                                {
-                                GetSprintLayers{
-                                    Projects{
-                                    Sprints{
-                                        SprintNumber
-                                        WorkItems{
-                                        SprintName
-                                        SprintNumber
-                                        CreatedDate
-                                        ClosedDate
-                                        WorkItemID
+                    const q = `{
+                                    GetSprintLayers{
+                                        Projects{
+                                            ProjectName
+                                            Sprints{
+                                                SprintNumber
+                                                WorkItems{
+                                                SprintName
+                                                SprintNumber
+                                                CreatedDate
+                                                ClosedDate
+                                                WorkItemID
+                                                }
+                                            }
                                         }
                                     }
-                                    }
-                                }
                                 }`;
                     async function postData(url = '', data = {}) {
                         const response = await fetch(url, {
@@ -66,7 +66,8 @@ module HTMLFiles =
                     postData('/graphql', {"operationName":null,"variables":{},"query":q})
                     .then(response => {
                         try {
-                            const sprintData = response.data.getSprintLayers[0].projects[0].sprints;
+                            // Grab the first asana project
+                            const sprintData = response.data.getSprintLayers[0].projects.find(e => e.projectName === "asana").sprints;
                             const closedWorkItems = sprintData
                                 .reduce((acc, e) => [ ...acc, ...e.workItems ], [])
                                 .map(e => ({
