@@ -21,7 +21,7 @@
     </style>
     <script>
         window.onload=function() {
-            const margin = {top: 20, right: 30, bottom: 100, left: 120},
+            const margin = {top: 40, right: 30, bottom: 100, left: 120},
                 width = 800 - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
             const axisSpacing = 30;
@@ -61,127 +61,133 @@
 
             postData('/graphql', {"operationName":null,"variables":{},"query":q})
             .then(response => {
-                const sprintData = response.data.getSprintLayers[0].projects[0].sprints;
-                const closedWorkItems = sprintData
-                    .reduce((acc, e) => [ ...acc, ...e.workItems ], [])
-                    .map(e => ({
-                        ...e,
-                        closedDate: e.closedDate ? Date.parse(e.closedDate) : 0,
-                        createdDate: Date.parse(e.createdDate),
-                    }))
-                    .filter(e => e.closedDate !== 0 || e.workItemID.startsWith("[ACTION]"))
-                const sprints = closedWorkItems
-                    .reduce((acc, e) => {
-                        if(acc[e.sprintNumber]) {
-                            acc[e.sprintNumber].value += 1;
-                        } else {
-                            acc[e.sprintNumber] = { value: 1, sprintNumber: e.sprintNumber };
-                        }
-                        return acc;
-                    }, {});
-                const sprintList = Object
-                    .values(sprints)
-                    .reduce((acc, sprintNumber) => {acc.push(sprintNumber); return acc;}, [])
-                    .sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1)
-                //taskList.map(e => con sole.log(`${e.sprintNumber} ${e.workItemID} ${new Date(e.closedDate)}`))
+                try {
+                    const sprintData = response.data.getSprintLayers[0].projects[0].sprints;
+                    const closedWorkItems = sprintData
+                        .reduce((acc, e) => [ ...acc, ...e.workItems ], [])
+                        .map(e => ({
+                            ...e,
+                            closedDate: e.closedDate ? Date.parse(e.closedDate) : 0,
+                            createdDate: Date.parse(e.createdDate),
+                        }))
+                        .filter(e => e.closedDate !== 0 /* && !e.workItemID.startsWith("[ACTION]") */)
+                    const sprints = closedWorkItems
+                        .reduce((acc, e) => {
+                            if(acc[e.sprintNumber]) {
+                                acc[e.sprintNumber].value += 1;
+                            } else {
+                                acc[e.sprintNumber] = { value: 1, sprintNumber: e.sprintNumber };
+                            }
+                            return acc;
+                        }, {});
+                    const sprintList = Object
+                        .values(sprints)
+                        .reduce((acc, sprintNumber) => {acc.push(sprintNumber); return acc;}, [])
+                        .sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1)
+                    //taskList.map(e => con sole.log(`${e.sprintNumber} ${e.workItemID} ${new Date(e.closedDate)}`))
 
-                /*
-                [2, 2, 2]
-                [6, 4, 2]
-                */
-                const burnDown = sprintList
-                    .map(function(e, i) {
-                        let sum = 0;
-                        for (let j = i; j < sprintList.length; j++) {
-                            const element = sprintList[j];
-                            sum += element.value;
-                        }
-                        return {
-                            value: sum,
-                            sprintNumber: e.sprintNumber - 1,
-                        };
-                    })
-                    //.sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1);
-                burnDown.push({ value: 0, sprintNumber: burnDown.length });
-                const data = burnDown;
+                    const burnDown = sprintList
+                        .map(function(e, i) {
+                            let sum = 0;
+                            for (let j = i; j < sprintList.length; j++) {
+                                const element = sprintList[j];
+                                sum += element.value;
+                            }
+                            return {
+                                value: sum,
+                                sprintNumber: e.sprintNumber - 1,
+                            };
+                        })
+                        //.sort((a, b) => (a.sprintNumber) > (b.sprintNumber) ? 1 : -1);
+                    burnDown.push({ value: 0, sprintNumber: burnDown.length });
+                    const data = burnDown;
 
-                d3.select("#status")
-                    .attr("hidden", "hidden");
+                    d3.select("#status")
+                        .attr("hidden", "hidden");
 
-                const svg = d3.select("#chart")
-                    .append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
-                    .append("g")
-                        .attr("transform",
-                            "translate(" + margin.left + "," + margin.top + ")");
-                // Add X axis
-                var x = d3.scaleLinear()
-                  .domain(d3.extent(data, function(d) { return d.sprintNumber; }))
-                  .range([ 0, width ]);
-                svg.append("g")
-                  .attr("transform", "translate(0," + (height + axisSpacing) + ")")
-                  .call(
-                    d3.axisBottom(x)
-                      .ticks(burnDown.length)
-                      .tickSize(-height)
-                  );
+                    const svg = d3.select("#chart")
+                        .append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                            .attr("transform",
+                                "translate(" + margin.left + "," + margin.top + ")");
+                    // Add X axis
+                    var x = d3.scaleLinear()
+                    .domain(d3.extent(data, function(d) { return d.sprintNumber; }))
+                    .range([ 0, width ]);
+                    svg.append("g")
+                    .attr("transform", "translate(0," + (height + axisSpacing) + ")")
+                    .call(
+                        d3.axisBottom(x)
+                        .ticks(burnDown.length)
+                        .tickSize(-height*1.1)
+                    );
 
-                // Add Y axis
-                var y = d3.scaleLinear()
-                  .domain([0, d3.max(data, function(d) { return +d.value; })])
-                  .range([ height, 0 ]);
-                svg.append("g")
-                  .attr("transform", "translate("+ (-axisSpacing) + ",0)")
-                  .call(
-                    d3.axisLeft(y)
-                      .tickSize(-width*1.1)
-                  );
+                    // Add Y axis
+                    var y = d3.scaleLinear()
+                    .domain([0, d3.max(data, function(d) { return +d.value; })])
+                    .range([ height, 0 ]);
+                    svg.append("g")
+                    .attr("transform", "translate("+ (-axisSpacing) + ",0)")
+                    .call(
+                        d3.axisLeft(y)
+                        .tickSize(-width*1.1)
+                    );
 
-                // Style tick-lines to work as a grid
-                svg.selectAll(".tick line").attr("stroke", "#67a4e3")
-                svg.selectAll(".tick text").attr("font-size", 18)
+                    // Style tick-lines to work as a grid
+                    svg.selectAll(".tick line").attr("stroke", "#67a4e3")
+                    svg.selectAll(".tick text").attr("font-size", 18)
 
-                // Not sure why this suddenly shows up
-                svg.selectAll(".domain").attr("display", "none")
+                    // Not sure why this suddenly shows up
+                    svg.selectAll(".domain").attr("display", "none")
 
-                svg.append("text")
-                  .attr("text-anchor", "middle")
-                  .attr("x", width/2)
-                  .attr("y", height + margin.bottom/2 + axisSpacing)
-                  .text("Sprint");
+                    svg.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width/2)
+                    .attr("y", height + margin.bottom/2 + axisSpacing)
+                    .text("Sprint");
 
-                svg.append("text")
-                  .attr("text-anchor", "middle")
-                  .attr("x", width/2)
-                  .attr("y", 20)
-                  .attr("font-size", 32)
-                  .text("Workitems remaining");
+                    svg.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width/2)
+                    .attr("y", 0)
+                    .attr("font-size", 32)
+                    .text("Workitems remaining");
 
-                // Add the line
-                svg.append("path")
-                  .datum(data)
-                  .attr("fill", "none")
-                  .attr("stroke", "white")
-                  .attr("stroke-width", 6)
-                  .attr("d", d3.line()
-                      .x(function(d) { return x(d.sprintNumber) })
-                      .y(function(d) { return y(d.value) })
-                  )
-                // Add dots
-                svg.append('g')
-                  .selectAll("dot")
-                  .data(data)
-                  .enter()
-                  .append("circle")
-                    .attr("cx", function (d) { return x(d.sprintNumber); } )
-                    .attr("cy", function (d) { return y(d.value); } )
-                    .attr("r", 16)
+                    // Add the line
+                    svg.append("path")
+                    .datum(data)
+                    .attr("fill", "none")
                     .attr("stroke", "white")
-                    .attr("stroke-width", 4)
-                    .style("fill", function (d) { return "#3876b7" } )
-                          });
-                      }
+                    .attr("stroke-width", 6)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x(d.sprintNumber) })
+                        .y(function(d) { return y(d.value) })
+                    )
+                    // Add dots
+                    svg.append('g')
+                    .selectAll("dot")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                        .attr("cx", function (d) { return x(d.sprintNumber); } )
+                        .attr("cy", function (d) { return y(d.value); } )
+                        .attr("r", 16)
+                        .attr("stroke", "white")
+                        .attr("stroke-width", 4)
+                        .style("fill", function (d) { return "#3876b7" } )
+                }
+                catch(e) {
+                    d3.select("#status")
+                        .attr("hidden", null)
+                        .text(`Error: ${e.message} (see developer console)`);
+                    d3.select("#chart svg")
+                        .remove();
+                    console.error(e);
+                }
+            });
+        }
     </script>
 </head>
 <body>
