@@ -160,7 +160,7 @@ module data =
    
    let configurationlist() = 
       try
-      ConfigList.Load "http://configurations-svc:8086/meta/category/workitems"     
+      ConfigList.Load "http://configurations-svc:8085/meta/category/workitems"     
       |> Array.collect(fun config -> 
          let key = config.Id
          try 
