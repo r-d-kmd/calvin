@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="burndown.html" />
+    <Compile Include="HTMLFiles.fs" />
     <Compile Include="jsonprovider.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Schema.fs" />
